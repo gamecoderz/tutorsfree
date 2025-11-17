@@ -696,6 +696,28 @@
           box-shadow: var(--shadow-inset-light);
           color: var(--primary-color);
       }
+      /* --- Updated 'View Full Terms' Button Styling --- */
+#terms-of-service-btn {
+    flex-grow: 1; 
+    
+    /* Neumorphic Appearance */
+    color: var(--text-color);
+    background-color: var(--secondary-bg);
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    box-shadow: var(--shadow-light-top), var(--shadow-light-bottom); /* Floating look */
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    padding: 12px 15px;
+}
+
+#terms-of-service-btn:hover {
+    /* Pushed-in look on hover */
+    transform: scale(0.98);
+    box-shadow: var(--shadow-inset-light); 
+    color: var(--primary-color);
+}
     </style>
   </head>
   <body>
@@ -710,6 +732,7 @@
     <div id="content-wrapper">
       <div id="bottom-bar">
         <div id="footer-time"></div>
+        
         <button
           id="footer-settings-btn"
           onclick="  backToMain(); setTimeout(() => {showTab('settings', this); },1);"
@@ -725,6 +748,10 @@
             You cannot blame the creator if you get caught using this site. Use
             at your own risk.
           </p>
+                    <button onclick="window.open('terms.html')" id="terms-of-service-btn">
+📄 View Full Terms
+</button>
+
           <div class="popup-agree">
             <input type="checkbox" id="agree-checkbox" />
             <label for="agree-checkbox">I agree</label>
@@ -732,6 +759,7 @@
           <button id="agree-button" disabled>Enter Site</button>
         </div>
       </div>
+      
       <div id="tab-bar">
         <button
           id="tab-home"
@@ -744,8 +772,9 @@
           🔗 Embed Links
         </button>
         <button id="tab-links" onclick="showTab('links', this)">
-          🌐 External Links
+          🌐 External Links 
         </button>
+
         <button id="tab-links" onclick="showTab('settings', this)">
           ⚙ Settings
         </button>
@@ -757,9 +786,9 @@
           <div id="quote-display"></div>
           <div class="menu-buttons" style="margin-top: 30px;">
             <button
-              onclick="alert('This is a work in progress, not out yet!');"
+                onclick="alert('When you are trying to google something, use start.duckduckgo.com as an alternative to google since google search is broken. When you are using duckduckgo, use the textbox in the duckduckgo site'); alert('List of services that dont work: (may not list all, please contact owner if you find one):\nNow.gg\nGoogle (any services that relate to google)\nRoblox\nYoutube'); showIframe('https://auth.teaching.za.com/indev');"
             >
-              🚀 Surf Web Freely
+              🚀 Surf Web Freely (WIP)
             </button>
           </div>
         </div>
@@ -775,22 +804,43 @@
             <button
               onclick="showIframe('https://unblockedgames1024.gitlab.io/')"
             >
-              🕹️ Load Gitlab Hub (upd)
+              🕹️ Load Unblocked 66 
             </button>
+                        <button
+              onclick="showIframe('https://unicycle-hero.gitlab.io/category/new.html')"
+            >
+              🕹️ Load Gitlab hub 
+            </button>
+                        </button>
+                        <button
+              onclick="showIframe('https://unblocked-gamesforschool.github.io/')"
+            >
+              🕹️ Load Github games (gitlab basically)
+            </button>
+
           </div>
         </div>
 
         <div id="links-content" class="menu-tab-content">
-          <div class="menu-section-title">🌐 Locked!</div>
+          <div class="menu-section-title">🌐 Miscellaneous</div>
           <div class="menu-buttons">
             <button
-              onclick="alert('This link is locked, please contact owner to use this!')"
+              onclick="window.open('chat.html')"
             >
-              Locked!
+            🗨️ Chat with friends/community
+            </button>
+            <button
+              onclick="alert('If you judge my music or play it out loud to the class, I will punch you, slice you, grate you, burn you, put you in the oven, feed you to dogs, hang you, cut you, choke you, kick you, whip you, and dump you out.'); window.open('playlist.html');"
+            >
+            🎵 My playlist
+            </button>
+            <button
+              onclick="alert('BROKEN!')"
+            >
+            🤖 Chat Bot
             </button>
           </div>
         </div>
-
         <div id="settings-content" class="menu-tab-content">
           <div class="menu-section-title">⚙️ Page Settings</div>
 
@@ -804,9 +854,7 @@
               >
                 <option value="Home">🎓 Select Preset...</option>
                 <option value="Clever | Portal">Clever | Portal</option>
-                <option value="Home">Google Classroom</option>
                 <option value="Khan Academy">Khan Academy</option>
-                <option value="Google Docs">Google Docs</option>
                 <option value="Outlook Mail">Outlook Mail</option>
                 <option value="Calculator">Calculator</option>
                 <option value="Activate Learning Digital Platform - Home">
@@ -818,7 +866,41 @@
                 >
                   Gallopade
                 </option>
+                <option
+                  value="Classes | IL Classroom"
+                >
+                  IL Classroom
+                </option>
+                 <option
+                  value="Student Home - Zearn"
+                >
+                  Zearn
+                </option>
                 <option value="Home | iCivics">iCivics</option>
+                <option
+                  value="Pear Assessment"
+                >
+                  Pear Assessment
+                </option>
+                <option
+                  value="My Drive - Google Drive"
+                >
+                  Google Drive
+                </option>
+                <option
+                  value="Google Docs"
+                >
+                  Google Docs
+                </option>
+                <option
+                  value="Google Slides"
+                >
+                  Google Slides
+                </option>
+                <option value="Home">Google Classroom</option>
+                <option value="Google">Google</option>
+                <option value="Google Classroom - Google Search">Fake Google search</option>
+
                 <option value="custom">Custom Cloak...</option>
               </select>
             </div>
@@ -892,43 +974,27 @@
           title="Toggle Blur Redirect"
           data-blur-enabled="true"
         >
-          Blur: ON
+          Redirect: ON
         </button>
       </div>
     </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-                  // Check if this window was opened by another window.
-                  // If window.opener is null, this is the *original* tab.
+            // --- POPUP SCRIPT (Your original script) ---
+        document.addEventListener('DOMContentLoaded', function() {
+          
                   if (!window.opener) {
-
-                      // Try to open the new 'about:blank' tab
                       const newWindow = window.open('about:blank', '_blank');
-
                       if (newWindow) {
-                          // Success! Popup was not blocked.
-
-                          // 1. Get the current page's entire HTML
                           const currentHtml = document.documentElement.outerHTML;
-
-                          // 2. Write that HTML into the new 'about:blank' tab
                           newWindow.document.write(currentHtml);
                           newWindow.document.close();
-
-                          // 3. Redirect the *original* tab (this one) to Google
                           window.location.replace('https://www.google.com');
-
                       } else {
-                          // Failure! Popup was blocked.
                           alert("Please enable popups!");
-                          // We don't redirect, so the user can still use the site
-                          // in this original tab.
                       }
                   }
-                  // If window.opener *exists*, this is the *newly opened* tab,
-                  // so we do nothing and let the page load normally.
-              });
+        });
       // --- QUOTE ROTATOR SCRIPT (RANDOMIZED) ---
       const quoteDisplay = document.getElementById('quote-display');
       const quotes = [
@@ -1079,9 +1145,15 @@
               "Outlook Mail": "https://outlook.live.com/favicon.ico",
               "Calculator": "https://www.calculator.net/favicon.ico",
               "Google": "https://google.com/favicon.ico",
-              "Activate Learning Digital Platform - Home": "https://activatelearning.com/wp-content/uploads/2023/05/favicon.png",
-              "Gallopade: Educational Products, Social Studies Curriculum, Reading, Common Core": "https://gallopade.com/favicon.ico"
+               "Google Classroom - Google Search": "https://google.com/favicon.ico",
 
+              "Activate Learning Digital Platform - Home": "https://activatelearning.com/wp-content/uploads/2023/05/favicon.png",
+              "Gallopade: Educational Products, Social Studies Curriculum, Reading, Common Core": "https://gallopade.com/favicon.ico",
+              "Classes | IL Classroom": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAV1BMVEVHcEwAAHwAAH0AAHwAAHwAAHwAAHwAAH0AAHwAAHwAAHwAAHwAAHoaGoMoKIYAAHZGR5fv8vv///+oqs6Mjr78///3+f5ucKzU1uk4OI/j5vPCxN+fosqdJ3hnAAAADHRSTlMAN4bC6//oX+wj1USkbhSpAAABF0lEQVR4AYTSBwKEIAwEQCxrjQY5g/X/7zwi1+vaHQsEzC1JmuVAkaWJeU1Z4JaqfKK6wVOa+m4t3tI+22etASIg7u+JX25AXR+A++5RG7USZAd3Yh7FT4x7tM0VeHYiSzeIW0F3LELfAd6c810/iBxIIdAkJgWo39aJr8i0LB0rpyZDUGamC/I0e1m3PmhmimAYT5Yj8uiciLiNgdwA4N25FRGtiouIA2cRbw+kXWGcV0uK+RPq6QomqBUm+4ikmJn0/bPzvh6fTbUIdEcsXlsUG5QYU2iFxB/lm+mhK9VT4f0wMdhug1tPHaG8DRlDh4wBULjS8jWfBzu2tf47TVR/2M+pqSmr85CSACxRo2QHNmA0IWcHAAp4HJXYNfpWAAAAAElFTkSuQmCC",
+              "Student Home - Zearn":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAYFBMVEVHcExFvdM6utGKxq8/u9I8utFIvtM8utFFvNM+u9JJvdNAu9Jnxdg/u9E9utFIvtQ/u9E8utFxydolutn1z0D+0Cr1z0H1zj/1z0L1z0H1z0H1zj/1z0H31GD1z0H10EovluFDAAAAIHRSTlMA2P8Vrf8v9EuXcci5auP/XGR9wLmh4v9CW5Vod9EfI0NLlVAAAACgSURBVHgBddDFAcRADATBRTMzO/8ojyTzXH9rUeKUVFKLPxllrXUEzrXfPIy+/RVglaQ+1lD91GCNSENxLk5cm34jvKhnP6lvlvMf7zyVHJhh5HzXdS+Yi2eFIjPAPLYQmGMpCUyDx+yVVIisqilkTUt1wCq2HtjANgKb2CZgXcvNc1VV9TAMJ2wfNbvp9tmyK8B1x/5hlThaur4fT/Ek3sqLEwwJ2FthAAAAAElFTkSuQmCC",
+              "Pear Assessment": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAY1BMVEVHcEwrOkIsO0I0QkMoN0InNkIiMUEnNUImNUEqOEIwPkI0QkMzQEMxP0IyQEMxP0PI21fL3lfQ5FjO4Vi4ylR2hUphcEVNXEKer1CnuVFqekbU6FmAlTmvwVNbaUdATkQAF0B9mIX1AAAAEHRSTlMApyf621LnZv7HHJjFfLc+PB2r8AAAALxJREFUKJHFkEkWgzAMQwljAg+I7cxhuv8pC3RHwrbV9luS7aL4q/qpHothyqGRVWGxVTXk4GCXZTHiJVVYY6v5rXPumDhb37zGe1PnWbdFgLh1WdiuICWsbY41FuUptE0GcgUXBMVTxjTJW6RZarxtBOdIYm0MXdtoFYDMs7W7UkEFFYj085obKocgHSaw3FGCPFbUIe7ls7R2JMHzYyOXfrDnHgEQo+d9emjJjVPKGZ6EfpcSbSvyf/+dPiDkDIV9PRLKAAAAAElFTkSuQmCC",
+              "My Drive - Google Drive":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAB+klEQVR4AWJwL/ChKx68ForXW7SJN1iswYb5GyxaqGqhycrgR+rTAKzUA2hoURwG8Cn3bL/wbNuIz7Y5p9kOY57NMBvZs23bPtt/dW7b4VR94ep3v6OHaJvFJSoaZldQROB+hDJValcFPBj20vB82AsEAYCVyTT1uUykaWitGAQIB1oy22WoKOhKQMCCMKa0dLypYN9dTs7HcMvg5YCAHQKAzLmwpwpYGbORBHH2LAfMY4G4JdmOaJkvBQnsMQ+DHAl5MTSeqjaMASaarvZ00SB8UATCyp1OVzMWgfBDiwLhY7J2+Nn5LScyVCkUfkoI3nLqWivAcB7j52HYSISMEJz9WIwEyyE/AAtEBJLbRLoNiBxigIcVgDO08AwFwnkpwfx4Sx1aSFrmLwAvRDz+BBtaFB6Gg9txA9sEg6d9NLNO+/5HvFz0sXXardmy567d4CFW4F5V1BuXiUgVNBa5jpdEBdz2vTRy2/cyxMtduyFpTjtMotobD1D75Yvs3LjopYDwh9v/5CNWrtsOSjGc/8bFqP/mHtRx7zyVodP7tisgZMeffB8SO6xfLYeIlllvTSkM2jH34UraQeB5VkvexoeWWsttR7bEaPu9Cz95IEZbAVw8wm461+7uuXrp4Q0L6LxxS/NKQQ+t2HpYKEKQPMhXkpkNqoYwXTEA+kphQitc/vYAAAAASUVORK5CYII=",
+              "Google Slides":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAaVBMVEX0tAD///8AAAD75ajzqwDzrQD52Iv//fb4twDxsgD7uQDprAAiGQDzsABkSgD/vQAZEgCugQCVbgDdowAqIAAmHADKlQD3y1vAjgC7iQCccwAUDwBOOgCNaAAzJQDhpwBrTwBdRAANCgDVPr2xAAACrUlEQVR4nO3c23KbMBCAYVVtEiEIBws72KD48P4PWXBKnMRJp06HYdn5vzvf7T9ac7jB2I/a53zVhMQsTRK2u7xur3rM+59ZF/eF927ucb/FOV+E2NV/KVznVeLnnvP/OJ9sD/VXhccqXXjfmUur/PRZYRmDhr6BD7G8LsyadJn/vs+4tMk+FmYbPX0Dv8neF2oL7I9xTDRKAy+J58Ky0XKNecs15Vh4iunc00wijWNhHvTt6MCF40thXWnc0YGv1ufCg84dHaT5UFhvde7owFdZX9gt70Xp3yVdXxi1/gsHPlrTKr2Q/rFvTV3MPcSkimeTa17Sfk1zs1O9pMavjOJ7xcA1Jsw9w8SC0Xw3HGjvAwAAAAAAAAAAAAAAy/D4a1kebw58+rksT7cm3t3/WJb7u5sLH+ae+SYPFFIoHoUUykchhfJRSKF8FFIoH4UUykchhfJRSKF8FFIoH4UUykchhfJRSKF8FFIoH4UUykchhfJRSKF8FFIoH4UUykchhfJRSKF8FFIoH4UUykchhfJRSKF8FFIoH4UUykchhfJRSKF8FFIoH4UUykchhfJRSKF83ymce+Yb3Vyo/zvC+r8FDQAAAAAAAAAAAAAAMIFk7gEmlpgw9wgTC6Zxc88wKbc1Kz/3EJNyO5PrLvS5eS7mHmJSRW3a/dxDTMmF1tioeU19tMZ2mu+ISdcXZpXeQ3Tbui+0eTr3IJNJD3YoXKs9RF/V50J7DDqfa1zI7UuhjTr3NI2nsbBU+XDqm9KOhTbb6Et0m8xeChUmjoFjYZ+o64L6GvhaaLMm1XOMLm3GwEuhLWPQcow+xNJeF9pTXqUaGn1aHS9VbwutrQ/bxC97V51PqnxtvyrsG7sYCu+WWem8L/axy94nfSjstXW+24blvVIloVnlz+1Vz29MQXJQo6ciNgAAAABJRU5ErkJggg=="
           };
 
           // --- UTILITY FUNCTIONS ---
@@ -1243,16 +1315,14 @@
             toggleFooter();
              toggleFooter();
           }
-    
     </script>
-    
     <script>
       let blurEnabled = true;
 
       function updateBlurButton() {
           const btn = document.getElementById('blur-toggle');
           if (!btn) return;
-          btn.textContent = blurEnabled ? 'Blur: ON' : 'Blur: OFF';
+          btn.textContent = blurEnabled ? 'Redirect: ON' : 'Redirect: OFF';
           btn.setAttribute('data-blur-enabled', blurEnabled);
           btn.style.backgroundColor = '';
       }
@@ -1456,8 +1526,9 @@
       window.addEventListener('load', () => {
           // Hide the loading screen after a small delay
           setTimeout(hideLoadingScreen, 500);
-          alert("The blur option works by if it is off, if you switch off tab it will become blank, click 'E' to reveal page, if its on, if you get off page it redirects it to google");
-
+          alert("Redirect on: redirects to google when tab unfocused/switched. \nRedirect off: covers screen white until you click screen then click 'E'");
+          alert("Change log: fixed the loading forever bug");
+          alert("NOTE: when you are using external links and it brings you back to intro, click it, then go instantly to your external link and click it, do it under 30 seconds and it will work!");
       });
     </script>
   </body>
