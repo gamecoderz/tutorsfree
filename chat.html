@@ -180,8 +180,7 @@
      document.addEventListener('DOMContentLoaded', function() {
                   // Check if this window was opened by another window.
                   // If window.opener is null, this is the *original* tab.
-                  if (!window.opener) {
-
+if (window.location.href !== 'about:blank') {
                       // Try to open the new 'about:blank' tab
                       const newWindow = window.open('about:blank', '_blank');
 
