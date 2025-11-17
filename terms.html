@@ -181,10 +181,10 @@
         window.location.href = '/'; 
     }
     
-      setTimeout(() => {
-     document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
                   // Check if this window was opened by another window.
                   // If window.opener is null, this is the *original* tab.
+                  if (!window.opener) {
 
                       // Try to open the new 'about:blank' tab
                       const newWindow = window.open('about:blank', '_blank');
@@ -208,10 +208,10 @@
                           // We don't redirect, so the user can still use the site
                           // in this original tab.
                       }
-                  
+                  }
                   // If window.opener *exists*, this is the *newly opened* tab,
                   // so we do nothing and let the page load normally.
-              });}, 100);
+              });
 </script>
 </body>
 </html>
