@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght300;500;700;900&display=swap" rel="stylesheet">
+    
+
+    <style>
+        /* --- GAME HUB STYLE: VARIABLES (Fonts, Colors) --- */
+        :root {
+            --bg-color: #e0e5ec;
+            --text-color: #333333;
+            --primary-color: #4c68ff;
+            --border-radius: 12px;
+            /* This is the Game Hub font */
+            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --glass-color: rgba(255, 255, 255, 0.4);
+            --line-color: rgba(0, 0, 0, 0.07);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1e2023;
+            --text-color: #f0f0f0;
+            --primary-color: #6a7eff;
+            --glass-color: rgba(30, 32, 35, 0.6);
+            --line-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* --- GAME HUB STYLE: BASE & BACKGROUND --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+            /* Apply the Game Hub font */
+            font-family: var(--font-stack);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            
+            /* This is for the centered text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            
+            /* Needed for the pattern overlay */
+            position: relative; 
+        }
+
+        /* --- GAME HUB STYLE: "BETTER BACKGROUND" PATTERN --- */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-repeat: repeat;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: -1; /* Place it behind the content */
+            
+            /* Default Pattern */
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj4KICA8cGF0aCBkPSJNNTAgMEwwIDUwWk01MSAxTDEgNTEiIHN0cm9rZT0iIzc5NzY5MyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2Utb3BhY2l0eT0iMC4xNSIvPgogIDxwYXRoIGQ9Ik10MCAtMTBMMCA0MFptMTAgMTBMMTAgNTBaTTIwIDYwTDMwIC0xMFpNNCA1TDUgNFoiIHN0cm9rZT0iIzc5NzY5MyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2Utb3BhY2l0eT0iMC4xIi8+Cjwvc3ZnPg==');
+        }
+        
+        /* --- YOUR TEXT, BUT STYLED "BETTER" --- */
+        p.main-text {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: var(--text-color);
+            opacity: 0.7;
+            padding: 20px;
+        }
+
+        /* --- Top Controls (for theme) --- */
+        .top-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .top-controls button {
+            font-family: var(--font-stack);
+            height: 44px;
+            width: 44px;
+            font-size: 1.1em;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            background-color: var(--glass-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: var(--text-color);
+            transition: background-color 0.2s;
+        }
+        .top-controls button:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        [data-theme="dark"] .top-controls button:hover {
+            background-color: rgba(30, 32, 35, 0.9);
+        }
+    </style>
+</head>
+<body data-pattern="lines"> <div class="top-controls">
+        <button id="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-sun"></i>
+        </button>
+    </div>
+
+<iframe width = 100%; height = 95%; src="https://www.getmerlin.in/chat"></iframe>
+</body>
+
+   <script>
+        // --- POPUP SCRIPT (Your original script) ---
+        document.addEventListener('DOMContentLoaded', function() {
+                  if (!window.opener) {
+                      const newWindow = window.open('about:blank', '_blank');
+                      if (newWindow) {
+                          const currentHtml = document.documentElement.outerHTML;
+                          newWindow.document.write(currentHtml);
+                          newWindow.document.close();
+                          window.location.replace('https://www.google.com');
+                      } else {
+                          alert("Please enable popups!");
+                      }
+                  }
+        });
+
+        // --- GAME HUB STYLE SCRIPT (For Theme Toggle) ---
+        const root = document.documentElement;
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            if(themeToggleBtn) {
+                themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            }
+            localStorage.setItem('theme', theme);
+        }
+        
+        if(themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const newTheme = (root.getAttribute('data-theme') || 'light') === 'light' ? 'dark' : 'light';
+                applyTheme(newTheme);
+            });
+        }
+        
+        // Check for saved theme on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+        });
+    </script>
+</html>
