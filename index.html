@@ -951,6 +951,8 @@
       <div id="iframe-container">
         <nav id="iframe-nav">
           <button onclick="goToHomepage()">🏠 Homepage</button>
+          <button onclick="refreshIframe()">🔄 Refresh</button>
+
           <button onclick="openIframeInNewWindow()">
             ↗️ New Window (Cloaked)
           </button>
@@ -1302,6 +1304,10 @@
             toggleFooter();
              toggleFooter();
           }
+      function refreshIframe() {
+    // Access the contentWindow property and call reload()
+    iframeContainer.contentWindow.location.reload(); 
+}
     </script>
     <script>
       let blurEnabled = true;
