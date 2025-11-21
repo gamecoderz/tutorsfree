@@ -1,63 +1,469 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom font import and application */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Light gray background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
+<html>
+    <head>
+        <title>Error 404</title>
+    </head>
 
-    <div class="max-w-xl mx-auto p-8 sm:p-12 text-center bg-white rounded-3xl shadow-2xl border border-gray-100">
-        
-        <!-- Large Error Code -->
-        <h1 class="text-9xl font-extrabold text-red-500 mb-4 tracking-tight">
-            404
-        </h1>
-        
-        <!-- Main Message -->
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Oops! Page Not Found
-        </h2>
-        
-        <!-- Description -->
-        <p class="text-lg text-gray-600 mb-10">
-            It looks like the page you were looking for doesn't exist, has been moved, or the link is broken.
-            Don't worry, we'll help you find your way back.
-        </p>
+    <body>
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400');
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            
-            <!-- Home Button (Primary Action) -->
-            <a href="/" class="px-8 py-3 text-lg font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.02] shadow-lg shadow-indigo-200">
-                Go to Homepage
-            </a>
-            
-            <!-- Contact/Support Button (Secondary Action) -->
-            <a href="/chat" class="px-8 py-3 text-lg font-semibold rounded-xl text-gray-700 bg-gray-200 hover:bg-gray-300 transition duration-300 transform hover:scale-[1.02]">
-                Contact Support
-            </a>
+            body {
+                color: #5e9bdb; 
+                background: repeating-linear-gradient(0deg, #0e0d0e 25%, #0e0d0e 50%, #171819 50%, #171819 75%);
+                background-size: 10px 10px;
+                height: 100vh;
+                width: 100vw;
+                font-size: 5vw;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                font-family: 'Fira Mono', monospace;
+                justify-content: center;
+                align-items: center;
+            }
+
+            @keyframes single-shake {
+                0% { transform: translate(1px, 1px) rotate(0deg); }
+                25% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+                50% { transform: translate(1px, -1px) rotate(0.2deg); }
+                75% { transform: translate(-1px, 1px) rotate(-0.1deg); }
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+            .wisedom {
+                font-family: url(VGA.tff);
+                font-weight: 400;
+                text-rendering: optimizelegibility;
+                color: #80c0ff;
+                letter-spacing: 0px;
+                font-size: 40px;
+                min-height: 50px;
+                animation: blink 0.5s step-end infinite alternate; 
+                border-right: 3px solid #80c0ff;
+                text-align: center; /* Center the typing text */
+                max-width: 80%; /* Prevent line wrapping outside the view */
+            }
+
+            .shaky-char {
+                display: inline-block; 
+                animation: single-shake 100ms infinite; 
+            }
+
+            @keyframes blink {
+                50% {
+                    border-color: transparent;
+                }
+            }
+            .glitch {
+                font-size: 15vw;
+                position: relative;
+                color: ;
+            }
+            .line:not(:first-child) {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .line:nth-child(1) {
+                animation: clip 3000ms -300ms linear infinite, glitch1 500ms -184ms linear infinite;
+            }
+            @keyframes glitch1 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(4px); 
+                    color: #5e9bdb; 
+                }
+                90% {
+                    transform: translateX(-3px); 
+                    color: #80c0ff; 
+                }
+                95% {
+                    transform: translateX(1px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(2) {
+                animation: clip 3000ms -600ms linear infinite, glitch2 500ms -740ms linear infinite;
+            }
+            @keyframes glitch2 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(-5px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(2px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(-1px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(3) {
+                animation: clip 3000ms -900ms linear infinite, glitch3 500ms -333ms linear infinite;
+            }
+            @keyframes glitch3 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(-1px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(4px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(3px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(4) {
+                animation: clip 3000ms -1200ms linear infinite, glitch4 500ms -733ms linear infinite;
+            }
+            @keyframes glitch4 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(5px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(-2px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(0px);
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(5) {
+                animation: clip 3000ms -1500ms linear infinite, glitch5 500ms -896ms linear infinite;
+            }
+            @keyframes glitch5 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(-3px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(1px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(-4px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(6) {
+                animation: clip 3000ms -1800ms linear infinite, glitch6 500ms -815ms linear infinite;
+            }
+            @keyframes glitch6 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(4px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(-1px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(2px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(7) {
+                animation: clip 3000ms -2100ms linear infinite, glitch7 500ms -34ms linear infinite;
+            }
+            @keyframes glitch7 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(-2px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(5px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(-3px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(8) {
+                animation: clip 3000ms -2400ms linear infinite, glitch8 500ms -842ms linear infinite;
+            }
+            @keyframes glitch8 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(3px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(-4px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(1px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(9) {
+                animation: clip 3000ms -2700ms linear infinite, glitch9 500ms -751ms linear infinite;
+            }
+            @keyframes glitch9 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(1px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(3px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(-5px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            .line:nth-child(10) {
+                animation: clip 3000ms -3000ms linear infinite, glitch10 500ms -648ms linear infinite;
+            }
+            @keyframes glitch10 {
+                0% {
+                    transform: translateX(0);
+                }
+                80% {
+                    transform: translateX(0);
+                    color: #fff;
+                }
+                85% {
+                    transform: translateX(-4px); 
+                    color: #5e9bdb;
+                }
+                90% {
+                    transform: translateX(2px); 
+                    color: #80c0ff;
+                }
+                95% {
+                    transform: translateX(4px); 
+                    color: #fff;
+                }
+                100% {
+                    transform: translateX(0);
+                }
+            }
+            @keyframes clip {
+                0% {
+                    clip-path: polygon(0 100%, 100% 100%, 100% 120%, 0 120%);
+                }
+                100% {
+                    clip-path: polygon(0 -20%, 100% -20%, 100% 0%, 0 0);
+                }
+            }
+
+            .button-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 35px; /* Spacing between the buttons/links */
+                margin-top: 20px;
+            }
+
+            a {
+                padding: 10px 20px;
+                background-color: #80c0ff; /* Light Blue Button Background */
+                color: #0e0d0e; /* Dark Text for Contrast */
+                border-radius: 5px;
+                text-decoration: none;
+                cursor: pointer;
+                transition: 0s;
+                font-weight: bold;
+            }
+
+            .return-home {
+                background: none; /* Make this a link, not a full button */
+                color: #5e9bdb; /* Match the body text */
+                padding: 0;
+                font-weight: normal;
+                text-decoration: underline;
+            }
+            .return-home:hover {
+                filter: brightness(120%);
+            }
+
+
+            a:hover {
+                filter: brightness(90%);
+            }
+        </style>
+        <div class="glitch">
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
+            <div class="line">Error 404</div>
         </div>
-
-        <div class="mt-12 text-sm text-gray-400">
-            <!-- Footer/Suggestion -->
-            <p>If you typed the URL, please check for typos.</p>
+        <span class="wisedom"></span>
+        
+        <div class="button-container">
+            <a href="/chat.html" target="_blank">Contact Support</a>
+            <a href="/" class="return-home">Return home?</a>
         </div>
-    </div>
+        
+        <script>
+            // G O O F Y W I S D O M
+            const wiseness = [
+                'ERROR: Page not found. My cat probably ate it.',
+                'You have stumbled into the void where socks and missing web pages go.',
+                'The server is currently powered by a very tired hamster. Be gentle.',
+                'This page is taking a mandatory nap. Shhh...',
+                'The website is fine. It\'s just aggressively shy right now.',
+                'Go back. There are no cookies here, only existential dread.',
+                '404: The URL you requested has been replaced by a small, confused turnip.',
+                'Did you bring snacks? Because you\'re stuck here now.',
+                'I am currently judging your life choices from beyond the screen.',
+                'Try clicking the blue button. It may or may not summon a duck.',
+            ];
+            const element = document.getElementsByClassName('wisedom')[0];
 
-</body>
+            let currentTextIndex = 0;
+            let charIndex = 0;
+            let typingTimeout;
+            let deletingTimeout;
+
+            function type() {
+                // Loop messages
+                if (currentTextIndex >= wiseness.length) {
+                    currentTextIndex = 0; 
+                }
+
+                let text = wiseness[currentTextIndex];
+                let typeSpeed = 50; 
+
+                if (charIndex < text.length) {
+                    const char = text.charAt(charIndex);
+                    
+                    const shakySpan = document.createElement('span');
+                    shakySpan.className = 'shaky-char';
+                    shakySpan.textContent = char;
+                    
+                    element.appendChild(shakySpan);
+
+                    setTimeout(() => {
+                        // Replace the shaky span with just the text content after the shake animation
+                        shakySpan.outerHTML = shakySpan.innerHTML;
+                    }, 100); 
+
+                    charIndex++;
+                    typingTimeout = setTimeout(type, typeSpeed);
+                } else {
+                    deletingTimeout = setTimeout(deleteText, 5000); 
+                }
+            }
+
+            function deleteText() {
+                let text = wiseness[currentTextIndex];
+                let deleteSpeed = 25; 
+
+                if (charIndex > 0) {
+                    element.innerHTML = text.substring(0, charIndex - 1);
+                    charIndex--;
+                    deletingTimeout = setTimeout(deleteText, deleteSpeed);
+                } else {
+                    currentTextIndex++;
+                    typingTimeout = setTimeout(type, 800); 
+                }
+            }
+
+            // Start the typing sequence
+            setTimeout(type, 2000); 
+        </script>
+    </body>
 </html>
