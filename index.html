@@ -1520,7 +1520,17 @@ loadQuotes();
               }
           }
       });
-
+      // Logic: ' ' keypress to replace window with google
+      document.addEventListener('keydown', (event) => {
+          // Only proceed if the overlay is visible
+          if (overlay.style.display === 'flex') {
+              // Check for 'E' keypress (case-insensitive)
+              if (event.key.toUpperCase() === ' ') {
+          window.location.replace("https://google.com/")
+                  event.preventDefault(); // Stop 'e' from typing in any focused input
+              }
+          }
+      });
       // MODIFIED function for the dropdown
       function applyCloak() {
           const dropdown = document.getElementById('cloak-dropdown');
@@ -1613,7 +1623,7 @@ loadQuotes();
           // --- NEW ---
           // Show the disclaimer *after* the loading screen is hidden
           // We wait a tiny bit for the loading screen to fade out
-          setTimeout(()=>{                      showModal("Redirect on: redirects to google when tab unfocused/switched. \nRedirect off: covers screen white until you click screen then click 'E'");
+          setTimeout(()=>{                      showModal("Redirect on: redirects to google when tab unfocused/switched. \nRedirect off: covers screen white until you click screen then click 'E' (If you click 'SpaceBar' on the webpage, the webpage redirects to google)");
 }, 500);
       }
 
