@@ -1744,7 +1744,8 @@ loadQuotes();
             }
         });
     </script>
-<script>// Wrap the entire script execution in DOMContentLoaded to ensure all HTML elements
+<script>
+  // Wrap the entire script execution in DOMContentLoaded to ensure all HTML elements
 // are loaded and available before the script attempts to find them.
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1774,41 +1775,68 @@ document.addEventListener('DOMContentLoaded', () => {
         let dragOffsetX = 0;
         let dragOffsetY = 0;
         let moved = false; // Tracks if a significant move actually occurred
+        const VERTICAL_GAP = 16; // Fixed gap value (16px = 1rem) for vertical separation
         
-        // Fixed gap value (16px = 1rem) for vertical separation between button and modal
-        const VERTICAL_GAP = 16; 
+        // Element to block mouse events over iframes during drag
+        let dragOverlay = null; 
+
+        // Function to create and add the full-screen overlay
+        function addDragOverlay() {
+            dragOverlay = document.createElement('div');
+            dragOverlay.style.position = 'fixed';
+            dragOverlay.style.top = '0';
+            dragOverlay.style.left = '0';
+            dragOverlay.style.width = '100vw';
+            dragOverlay.style.height = '100vh';
+            dragOverlay.style.zIndex = '9999'; // Very high z-index to cover everything
+            dragOverlay.style.cursor = 'move'; // Show the move cursor while dragging
+            dragOverlay.style.backgroundColor = 'transparent';
+            document.body.appendChild(dragOverlay);
+        }
+
+        // Function to remove the overlay
+        function removeDragOverlay() {
+            if (dragOverlay) {
+                document.body.removeChild(dragOverlay);
+                dragOverlay = null;
+            }
+        }
 
         function startDrag(e) {
             e.preventDefault();
             moved = false;
             
-            // Convert element positioning from bottom/right to top/left only once
-            if (!element.style.top || !element.style.left) {
-                const rect = element.getBoundingClientRect();
-                
-                // Clear the original bottom/right anchors from the CSS
-                element.style.right = '';
-                element.style.bottom = '';
-                
-                // Set the current position using top/left
-                element.style.top = rect.top + 'px';
-                element.style.left = rect.left + 'px';
-            }
+            // Add the overlay at the start of the drag to handle iframes
+            addDragOverlay();
+
+            // Aggressively ensure elements are set to fixed position and convert 
+            // the current visual position (from CSS like bottom/right) to explicit top/left coordinates.
+
+            // 1. Configure the main draggable element (infoBtn)
+            element.style.position = 'fixed'; 
+            const rect = element.getBoundingClientRect();
+            element.style.right = ''; // Clear original CSS positioning
+            element.style.bottom = '';
+            element.style.top = rect.top + 'px';
+            element.style.left = rect.left + 'px';
             
-            // If a follower exists and is visible, do the same conversion for it
-            if (followerElement && isModalVisible && (!followerElement.style.top || !followerElement.style.left)) {
-                const rect = followerElement.getBoundingClientRect();
-                followerElement.style.right = '';
+            // 2. Configure the follower element (modal) if visible
+            if (followerElement && isModalVisible) {
+                followerElement.style.position = 'fixed'; 
+                const followerRect = followerElement.getBoundingClientRect();
+                followerElement.style.right = ''; // Clear original CSS positioning
                 followerElement.style.bottom = '';
-                followerElement.style.top = rect.top + 'px';
-                followerElement.style.left = rect.left + 'px';
+                followerElement.style.top = followerRect.top + 'px';
+                followerElement.style.left = followerRect.left + 'px';
             }
 
-
+            // Calculate offset based on the now-fixed position
             dragOffsetX = e.clientX - element.getBoundingClientRect().left;
             dragOffsetY = e.clientY - element.getBoundingClientRect().top;
 
             isDragging = true;
+            
+            // Attach mouse events to the document so they can't be lost easily
             document.addEventListener('mouseup', endDrag);
             document.addEventListener('mousemove', handleDrag);
         }
@@ -1818,7 +1846,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isDragging) return;
 
             // Detect movement to prevent accidental clicks
-            if (Math.abs(e.movementX) > 1 || Math.abs(e.movementY) > 1) {
+            // Threshold of 5px to distinguish a click from a drag
+            if (Math.abs(e.movementX) > 5 || Math.abs(e.movementY) > 5) {
                 moved = true;
             }
 
@@ -1859,25 +1888,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function endDrag() {
             isDragging = false;
+            removeDragOverlay(); // Remove the overlay at the end of the drag
             document.removeEventListener('mouseup', endDrag);
             document.removeEventListener('mousemove', handleDrag);
+
+            // *** CRITICAL FIX: Trigger the click action only if no movement occurred.
+            // This replaces the unreliable `click` event listener. ***
+            if (!moved && clickCallback) {
+                clickCallback();
+            }
         }
 
         // Attach the mouse down handler
         element.onmousedown = startDrag;
 
-        // Attach the click handler, checking for movement
-        element.addEventListener('click', (e) => {
-            if (moved) {
-                // If movement occurred, stop the propagation to prevent the click action (toggle modal)
-                e.stopImmediatePropagation();
-                moved = false; 
-                return;
-            }
-            if (clickCallback) {
-                clickCallback(e);
-            }
-        });
+        // REMOVED THE PREVIOUS UNRELIABLE `element.addEventListener('click', ...)` BLOCK
     }
 
     // --- 2. Modal Toggle Callback ---
@@ -1919,7 +1944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lastFrameTime = performance.now();
     let frameCount = 0;
-    const fpsInterval = 250; // Update FPS every 0.25 seconds (more responsive)
+    const fpsInterval = 100; // Update FPS every 0.1 seconds (more responsive)
     let fpsTimer = 0;
 
     function updateFPS(currentTime) {
@@ -1993,6 +2018,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Periodically check ping
     setInterval(measurePing, PING_INTERVAL_MS);
-}); // End of DOMContentLoaded</script>
+}); // End of DOMContentLoaded
+</script>
   </body>
 </html>
