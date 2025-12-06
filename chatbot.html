@@ -158,7 +158,7 @@
                     const match = errorText.match(/Please try again in (\d+\.?\d*)s/);
                     if (match) {
                         const seconds = match[1];
-                        rateLimitMessage = `try again in ${seconds}s`;
+                        rateLimitMessage = `try again in ${seconds} seconds`;
                         isRateLimit = true;
                     } 
                     
