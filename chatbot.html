@@ -3,42 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
-        <script id="cloning-script" src="cloner.js"></script>
+    <title>Starlighter Chat</title>
+    <script id="cloning-script" src="cloner.js"></script>
 
     <style>
-        /* ... (Your existing, fixed CSS styles remain here) ... */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .chat-container { background-color: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 450px; height: 90vh; max-height: 700px; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header { padding: 15px 20px; background-color: #007bff; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); text-align: center; }
-        .chat-header h3 { margin: 0; font-size: 1.1em; }
-        .model-name { font-size: 0.8em; color: #cce0ff; margin-top: 5px; }
-        .chat-box { flex-grow: 1; overflow-y: auto; padding: 20px; background-color: #f7f9fc; scrollbar-width: thin; scrollbar-color: #ccc transparent; }
-        .chat-box::-webkit-scrollbar { width: 8px; }
-        .chat-box::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
-        .message { margin-bottom: 15px; padding: 10px 15px; border-radius: 18px; line-height: 1.5; max-width: 85%; transition: all 0.2s ease-in-out; word-wrap: break-word; }
-        .user-message { background-color: #007bff; color: white; margin-left: auto; border-bottom-right-radius: 4px; }
-        .ai-message { background-color: #ffffff; border: 1px solid #e0e0e0; color: #333; margin-right: auto; border-bottom-left-radius: 4px; }
-        .input-area { display: flex; padding: 15px; background-color: white; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); }
-        .input-area input { flex-grow: 1; padding: 12px 18px; border: 1px solid #ddd; border-radius: 25px; margin-right: 10px; font-size: 1em; transition: border-color 0.3s, box-shadow 0.3s; }
-        .input-area input:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); }
-        .input-area button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 25px; cursor: pointer; transition: background-color 0.3s, transform 0.1s; font-weight: bold; }
-        .input-area button:hover:not(:disabled) { background-color: #1e7e34; }
-        .input-area button:active:not(:disabled) { transform: scale(0.98); }
-        .input-area button:disabled { background-color: #90a4ae; cursor: not-allowed; }
-        @media (max-width: 600px) { .chat-container { width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; } body { padding: 0; align-items: flex-start; } }
+        /* Base Styles */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #eef2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .chat-container { 
+            background-color: white; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            width: 100%; 
+            max-width: 450px; 
+            height: 90vh; 
+            max-height: 700px; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+
+        /* --- Updated Header and Button Styles --- */
+        .chat-header { 
+            /* Use Flexbox for alignment */
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Space out the button and the title */
+            padding: 15px 20px; 
+            background-color: #007bff; 
+            color: white; 
+            border-top-left-radius: 12px; 
+            border-top-right-radius: 12px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+        }
+
+        .header-title {
+            /* Ensures the title itself is centered in the space */
+            text-align: center;
+            flex-grow: 1; 
+            margin-right: 20px; /* Offset space for the button */
+        }
+
+        .chat-header h3 { 
+            margin: 0; 
+            font-size: 1.1em; 
+        }
+
+        .model-name { 
+            font-size: 0.8em; 
+            color: #cce0ff; 
+            margin-top: 5px; 
+        }
+
+        .back-button {
+            background: none; 
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: background-color 0.2s;
+            flex-shrink: 0; /* Prevents button from shrinking */
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        /* --- End Header/Button Styles --- */
+
+        /* Chat Box and Message Styles (Existing) */
+        .chat-box { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            background-color: #f7f9fc; 
+            scrollbar-width: thin; 
+            scrollbar-color: #ccc transparent; 
+        }
+        .chat-box::-webkit-scrollbar { 
+            width: 8px; 
+        }
+        .chat-box::-webkit-scrollbar-thumb { 
+            background-color: #ccc; 
+            border-radius: 4px; 
+        }
+        .message { 
+            margin-bottom: 15px; 
+            padding: 10px 15px; 
+            border-radius: 18px; 
+            line-height: 1.5; 
+            max-width: 85%; 
+            transition: all 0.2s ease-in-out; 
+            word-wrap: break-word; 
+        }
+        .user-message { 
+            background-color: #007bff; 
+            color: white; 
+            margin-left: auto; 
+            border-bottom-right-radius: 4px; 
+        }
+        .ai-message { 
+            background-color: #ffffff; 
+            border: 1px solid #e0e0e0; 
+            color: #333; 
+            margin-right: auto; 
+            border-bottom-left-radius: 4px; 
+        }
+        
+        /* Input Area Styles (Existing) */
+        .input-area { 
+            display: flex; 
+            padding: 15px; 
+            background-color: white; 
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); 
+        }
+        .input-area input { 
+            flex-grow: 1; 
+            padding: 12px 18px; 
+            border: 1px solid #ddd; 
+            border-radius: 25px; 
+            margin-right: 10px; 
+            font-size: 1em; 
+            transition: border-color 0.3s, box-shadow 0.3s; 
+        }
+        .input-area input:focus { 
+            outline: none; 
+            border-color: #007bff; 
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); 
+        }
+        .input-area button { 
+            padding: 10px 20px; 
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.1s; 
+            font-weight: bold; 
+        }
+        .input-area button:hover:not(:disabled) { 
+            background-color: #1e7e34; 
+        }
+        .input-area button:active:not(:disabled) { 
+            transform: scale(0.98); 
+        }
+        .input-area button:disabled { 
+            background-color: #90a4ae; 
+            cursor: not-allowed; 
+        }
+        
+        /* Media Queries (Existing) */
+        @media (max-width: 600px) { 
+            .chat-container { 
+                width: 100%; 
+                height: 100vh; 
+                max-height: 100vh; 
+                border-radius: 0; 
+            } 
+            body { 
+                padding: 0; 
+                align-items: flex-start; 
+            } 
+        }
     </style>
 </head>
 <body>
 
     <div class="chat-container">
         <div class="chat-header">
-            <h3>Starlighter</h3>
-            <div class="model-name">Model: chatgpt</div>
+            <button class="back-button" onclick="        window.location.href = '/'; ">
+                <span aria-hidden="true">←</span> Back to App
+            </button>
+            
+            <div class="header-title">
+                <h3>Starlighter</h3>
+                <div class="model-name">Model: chatgpt</div>
+            </div>
         </div>
+        
         <div class="chat-box" id="chat-box">
             <div class="message ai-message" id="initial-message">Initializing...</div>
         </div>
+        
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message..." autofocus disabled>
             <button onclick="sendMessage()" id="send-button" disabled>Send</button>
@@ -51,7 +207,7 @@
 
         // --- Configuration ---
         const API_KEY_URL = "https://starlightgg.github.io/T.txt"; // <<<--- REPLACE WITH YOUR ACTUAL URL
-        const GROQ_MODEL = "openai/gpt-oss-20b"; 
+        const GROQ_MODEL = "openai/gpt-oss-20b";
         const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
         
         let GROQ_API_KEY = null; // Key will be stored here after fetching
@@ -75,13 +231,13 @@
         function addMessage(role, content) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${role}-message`;
-            msgDiv.innerHTML = content.replace(/\n/g, '<br>'); 
+            msgDiv.innerHTML = content.replace(/\n/g, '<br>');
             chatBox.appendChild(msgDiv);
             scrollToBottom();
             return msgDiv;
         }
 
-        // --- New Function to Load Key ---
+        // --- Function to Load Key ---
         async function loadApiKey() {
             try {
                 // Fetch the text content of the URL
@@ -109,7 +265,7 @@
             }
         }
         
-// --- Main Send Function ---
+        // --- Main Send Function ---
         async function sendMessage() {
             const userText = userInput.value.trim();
             if (!userText || !GROQ_API_KEY) return;
@@ -124,7 +280,7 @@
             conversationHistory.push({ "role": "user", "content": userText });
 
             // 3. Add AI loading message
-            const aiMessageElement = addMessage('ai', 'Thinking...'); 
+            const aiMessageElement = addMessage('ai', 'Thinking...');
 
             try {
                 // 4. Use fetch to call the Groq API
@@ -160,12 +316,12 @@
                         const seconds = match[1];
                         rateLimitMessage = `try again in ${seconds} seconds`;
                         isRateLimit = true;
-                    } 
+                    }
                     
                     if (isRateLimit) {
-                         throw new Error(rateLimitMessage); // Throw the concise error
+                            throw new Error(rateLimitMessage); // Throw the concise error
                     } else {
-                         throw new Error(errorText); // Throw the detailed error if it's not rate limit
+                            throw new Error(errorText); // Throw the detailed error if it's not rate limit
                     }
                 }
 
@@ -197,7 +353,7 @@
 
         // Allow sending message by pressing Enter
         userInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && !sendButton.disabled) { 
+            if (event.key === 'Enter' && !sendButton.disabled) {
                 sendMessage();
             }
         });
