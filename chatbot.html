@@ -1137,28 +1137,60 @@ function saveStateToLocalStorage() {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function addMessage(role, content, targetElement = chatBox) {
-            const msgDiv = document.createElement('div');
-            
-            const safeRole = (role === 'user' || role === 'ai') ? role : 'ai';
-            
-            msgDiv.className = `message ${safeRole}-message`;
-            
-            const contentToParse = content && typeof content === 'string' ? content : '...';
-            let renderedHtml;
-            
-            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-                const decodedContent = new DOMParser().parseFromString(contentToParse, 'text/html').documentElement.textContent;
-                renderedHtml = marked.parse(decodedContent);
-            } else {
-                renderedHtml = contentToParse.replace(/\n/g, '<br>');
+// --- Updated Function to Handle Multimodal Content Arrays ---
+function addMessage(role, content, targetElement = chatBox) {
+    const msgDiv = document.createElement('div');
+    
+    const safeRole = (role === 'user' || role === 'ai') ? role : 'ai';
+    
+    msgDiv.className = `message ${safeRole}-message`;
+    
+    let contentToParse;
+
+    // 💡 NEW LOGIC: Check if the content is the complex array structure
+    if (Array.isArray(content)) {
+        let displayParts = [];
+        let hasImage = false;
+
+        content.forEach(part => {
+            if (part.type === 'text' && part.text && part.text.trim()) {
+                displayParts.push(part.text.trim());
+            } else if (part.type === 'image_url') {
+                hasImage = true;
             }
-            msgDiv.innerHTML = renderedHtml;
-            targetElement.appendChild(msgDiv);
-            scrollToBottom();
-            
-            return msgDiv;
+        });
+
+        // Construct a clean string for display
+        if (hasImage) {
+            displayParts.push('**[Image Attached]**');
         }
+        
+        // Use the combined parts for parsing
+        contentToParse = displayParts.join('<br>');
+
+    } else {
+        // Standard text-only message (or system/AI message)
+        contentToParse = content && typeof content === 'string' ? content : '...';
+    }
+
+
+    let renderedHtml;
+    
+    if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+        // Decode and parse for Markdown rendering
+        const decodedContent = new DOMParser().parseFromString(contentToParse, 'text/html').documentElement.textContent;
+        renderedHtml = marked.parse(decodedContent);
+    } else {
+        // Fallback for simple rendering
+        renderedHtml = contentToParse.replace(/\n/g, '<br>');
+    }
+
+    msgDiv.innerHTML = renderedHtml;
+    targetElement.appendChild(msgDiv);
+    scrollToBottom();
+    
+    return msgDiv;
+}
 
         // --- API Key Loading (Unchanged) ---
         async function loadApiKey() {
