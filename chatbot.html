@@ -836,15 +836,24 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function addMessage(role, content, targetElement = chatBox) {
+function addMessage(role, content, targetElement = chatBox) {
             const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${role}-message`;
-            msgDiv.innerHTML = content.replace(/\n/g, '<br>');
+            
+            // 💡 CRITICAL FIX: Ensure valid role and apply class defensively
+            const safeRole = (role === 'user' || role === 'ai') ? role : 'ai';
+            
+            msgDiv.className = `message ${safeRole}-message`;
+            
+            // Sanitize content and convert new lines to <br> tags
+            const safeContent = (content || '...').replace(/\n/g, '<br>');
+            
+            msgDiv.innerHTML = safeContent;
+            
             targetElement.appendChild(msgDiv);
             scrollToBottom();
+            
             return msgDiv;
         }
-
 
         // --- API Key Loading (omitted for brevity) ---
         async function loadApiKey() {
