@@ -437,648 +437,681 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <script>
-        // 🛑 🛑 🛑 WARNING: This method exposes your key via network inspection! 🛑 🛑 🛑
-        // Use a secure backend proxy for production environments.
+<script>
+    // 🛑 🛑 🛑 WARNING: This method exposes your key via network inspection! 🛑 🛑 🛑
+    // Use a secure backend proxy for production environments.
 
-        // --- Configuration ---
-        const API_KEY_URL = "https://starlightgg.github.io/T.txt"; 
-        const LOCAL_STORAGE_KEY = "starlighter_chats"; 
-        
-        const MODELS = {
-            'gpt-oss-20b': { name: "Chat-GPT OSS 20" , id: "openai/gpt-oss-20b" },
-            'compound-mini': { name: "Compound mini (Groq)", id: "groq/compound-mini" },
-            'llama3.1-8b': { name: "Llama AI 3.1", id: "llama-3.1-8b-instant" }
+    // --- Configuration ---
+    const API_KEY_URL = "https://starlightgg.github.io/T.txt"; 
+    const LOCAL_STORAGE_KEY = "starlighter_chats"; 
+    
+    const MODELS = {
+        'gpt-oss-20b': { name: "Chat-GPT OSS 20" , id: "openai/gpt-oss-20b" },
+        'compound-mini': { name: "Compound mini (Groq)", id: "groq/compound-mini" },
+        'llama3.1-8b': { name: "Llama AI 3.1", id: "llama-3.1-8b-instant" }
+    };
+    const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
+
+    // 🛑 MODIFICATION 1: TEMPLATE FUNCTION FOR SYSTEM PROMPT
+    const BASE_SYSTEM_PROMPT_CONTENT = "You are a helpful and fast AI assistant powered by StarlightGG. You are currently running on the [MODEL_NAME] model. Keep your responses concise.";
+
+    function getModelSystemPrompt(modelName = CURRENT_MODEL.name) {
+        return { 
+            "role": "system", 
+            "content": BASE_SYSTEM_PROMPT_CONTENT.replace('[MODEL_NAME]', modelName) 
         };
-        const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
-        const SYSTEM_PROMPT = { "role": "system", "content": "You are a helpful and fast AI assistant powered by StarlightGG. Keep your responses concise." };
+    }
+    // ------------------------------------------------------------------
 
-        let GROQ_API_KEY = null; 
-        let CURRENT_MODEL = MODELS['gpt-oss-20b']; 
-        
-        // --- State Management ---
-        const startPage = document.getElementById('start-page');
-        const mainChatContainer = document.getElementById('main-chat-container');
-        const modelSelectorContainer = document.getElementById('model-selector-container'); 
-        const modelSelectDropdown = document.getElementById('model-select-dropdown'); 
-        const apiStatus = document.getElementById('api-status');
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
-        const chatListContainer = document.getElementById('chat-list');
-        const modelDisplay = document.getElementById('displayed-model'); 
-        const contextMenu = document.getElementById('context-menu'); 
-        
-        // Modal elements
-        const confirmModal = document.getElementById('custom-confirm-modal');
-        const promptModal = document.getElementById('custom-prompt-modal');
-        const promptInput = document.getElementById('prompt-input');
+    let GROQ_API_KEY = null; 
+    let CURRENT_MODEL = MODELS['gpt-oss-20b']; 
+    
+    // --- State Management ---
+    const startPage = document.getElementById('start-page');
+    const mainChatContainer = document.getElementById('main-chat-container');
+    const modelSelectorContainer = document.getElementById('model-selector-container'); 
+    const modelSelectDropdown = document.getElementById('model-select-dropdown'); 
+    const apiStatus = document.getElementById('api-status');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    const chatListContainer = document.getElementById('chat-list');
+    const modelDisplay = document.getElementById('displayed-model'); 
+    const contextMenu = document.getElementById('context-menu'); 
+    
+    // Modal elements
+    const confirmModal = document.getElementById('custom-confirm-modal');
+    const promptModal = document.getElementById('custom-prompt-modal');
+    const promptInput = document.getElementById('prompt-input');
 
-        let allChatHistories = {};
-        let currentChatId = 'chat-0'; 
-        let chatCounter = 0;
-        let contextMenuTargetChatId = null; 
+    let allChatHistories = {};
+    let currentChatId = 'chat-0'; 
+    let chatCounter = 0;
+    let contextMenuTargetChatId = null; 
 
-        // --- UI Control Functions ---
-        
-        function showStartPage() {
-            startPage.style.display = 'flex';
-            mainChatContainer.style.display = 'none';
-        }
+    // --- UI Control Functions ---
+    
+    function showStartPage() {
+        startPage.style.display = 'flex';
+        mainChatContainer.style.display = 'none';
+    }
 
-        function showChatInterface() {
-            startPage.style.display = 'none';
-            mainChatContainer.style.display = 'flex';
-            userInput.focus();
-        }
+    function showChatInterface() {
+        startPage.style.display = 'none';
+        mainChatContainer.style.display = 'flex';
+        userInput.focus();
+    }
 
-        function hideContextMenu() { 
-            contextMenu.style.display = 'none';
-            contextMenuTargetChatId = null;
-        }
-        
-        // --- 🚨 NEW MODAL FUNCTIONS 🚨 ---
-        
-        /**
-         * Shows a custom confirmation dialog.
-         * @param {string} title - The title of the dialog.
-         * @param {string} message - The message body.
-         * @returns {Promise<boolean>} Resolves with true if confirmed, false if cancelled.
-         */
-        function showCustomConfirm(title, message) {
-            return new Promise(resolve => {
-                document.getElementById('confirm-title').textContent = title;
-                document.getElementById('confirm-message').textContent = message;
-                confirmModal.style.display = 'flex';
+    function hideContextMenu() { 
+        contextMenu.style.display = 'none';
+        contextMenuTargetChatId = null;
+    }
+    
+    // --- MODAL FUNCTIONS ---
+    
+    /**
+     * Shows a custom confirmation dialog.
+     * @param {string} title - The title of the dialog.
+     * @param {string} message - The message body.
+     * @returns {Promise<boolean>} Resolves with true if confirmed, false if cancelled.
+     */
+    function showCustomConfirm(title, message) {
+        return new Promise(resolve => {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmModal.style.display = 'flex';
 
-                const confirmButtons = confirmModal.querySelectorAll('.modal-buttons button');
-                
-                const handleConfirmClick = (event) => {
-                    const response = event.target.dataset.confirmResponse === 'true';
-                    
-                    // Cleanup listeners
-                    confirmButtons.forEach(btn => btn.removeEventListener('click', handleConfirmClick));
-                    confirmModal.style.display = 'none';
-                    resolve(response);
-                };
-
-                confirmButtons.forEach(btn => btn.addEventListener('click', handleConfirmClick));
-            });
-        }
-        
-        /**
-         * Shows a custom prompt dialog.
-         * @param {string} title - The title of the dialog.
-         * @param {string} message - The message body.
-         * @param {string} defaultValue - The default text value for the input.
-         * @returns {Promise<string|null>} Resolves with the input string or null if cancelled.
-         */
-        function showCustomPrompt(title, message, defaultValue) {
-            return new Promise(resolve => {
-                document.getElementById('prompt-title').textContent = title;
-                document.getElementById('prompt-message').textContent = message;
-                promptInput.value = defaultValue;
-                promptModal.style.display = 'flex';
-                promptInput.focus();
-                
-                // Select all text in input
-                promptInput.select();
-
-                const promptButtons = promptModal.querySelectorAll('.modal-buttons button');
-                
-                const handlePromptClick = (event) => {
-                    const responseType = event.target.dataset.promptResponse;
-                    
-                    // Cleanup listeners
-                    promptButtons.forEach(btn => btn.removeEventListener('click', handlePromptClick));
-                    promptInput.removeEventListener('keydown', handlePromptKeydown);
-                    promptModal.style.display = 'none';
-
-                    if (responseType === 'true') {
-                        const finalValue = promptInput.value.trim();
-                        resolve(finalValue || null); 
-                    } else {
-                        resolve(null); // Cancelled
-                    }
-                };
-
-                const handlePromptKeydown = (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        // Simulate click on the 'Save' button
-                        promptModal.querySelector('.confirm-btn').click();
-                    } else if (event.key === 'Escape') {
-                         event.preventDefault();
-                        // Simulate click on the 'Cancel' button
-                        promptModal.querySelector('.cancel-btn').click();
-                    }
-                };
-
-                promptButtons.forEach(btn => btn.addEventListener('click', handlePromptClick));
-                promptInput.addEventListener('keydown', handlePromptKeydown);
-            });
-        }
-        
-        // --- Model Selection and Initialization (omitted for brevity) ---
-
-        function populateModelSelector() {
-            modelSelectorContainer.innerHTML = '';
-            modelSelectDropdown.innerHTML = '';
+            const confirmButtons = confirmModal.querySelectorAll('.modal-buttons button');
             
-            Object.keys(MODELS).forEach(key => {
-                const model = MODELS[key];
+            const handleConfirmClick = (event) => {
+                const response = event.target.dataset.confirmResponse === 'true';
                 
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = model.name;
-                modelSelectDropdown.appendChild(option);
+                // Cleanup listeners
+                confirmButtons.forEach(btn => btn.removeEventListener('click', handleConfirmClick));
+                confirmModal.style.display = 'none';
+                resolve(response);
+            };
 
-                const button = document.createElement('button');
-                button.className = 'model-button';
-                button.dataset.modelKey = key;
-                button.textContent = model.name;
-                button.onclick = (e) => selectModel(key, true, e.target); 
-                modelSelectorContainer.appendChild(button);
-            });
-        }
+            confirmButtons.forEach(btn => btn.addEventListener('click', handleConfirmClick));
+        });
+    }
+    
+    /**
+     * Shows a custom prompt dialog.
+     * @param {string} title - The title of the dialog.
+     * @param {string} message - The message body.
+     * @param {string} defaultValue - The default text value for the input.
+     * @returns {Promise<string|null>} Resolves with the input string or null if cancelled.
+     */
+    function showCustomPrompt(title, message, defaultValue) {
+        return new Promise(resolve => {
+            document.getElementById('prompt-title').textContent = title;
+            document.getElementById('prompt-message').textContent = message;
+            promptInput.value = defaultValue;
+            promptModal.style.display = 'flex';
+            promptInput.focus();
+            
+            // Select all text in input
+            promptInput.select();
+
+            const promptButtons = promptModal.querySelectorAll('.modal-buttons button');
+            
+            const handlePromptClick = (event) => {
+                const responseType = event.target.dataset.promptResponse;
+                
+                // Cleanup listeners
+                promptButtons.forEach(btn => btn.removeEventListener('click', handlePromptClick));
+                promptInput.removeEventListener('keydown', handlePromptKeydown);
+                promptModal.style.display = 'none';
+
+                if (responseType === 'true') {
+                    const finalValue = promptInput.value.trim();
+                    resolve(finalValue || null); 
+                } else {
+                    resolve(null); // Cancelled
+                }
+            };
+
+            const handlePromptKeydown = (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    // Simulate click on the 'Save' button
+                    promptModal.querySelector('.confirm-btn').click();
+                } else if (event.key === 'Escape') {
+                     event.preventDefault();
+                    // Simulate click on the 'Cancel' button
+                    promptModal.querySelector('.cancel-btn').click();
+                }
+            };
+
+            promptButtons.forEach(btn => btn.addEventListener('click', handlePromptClick));
+            promptInput.addEventListener('keydown', handlePromptKeydown);
+        });
+    }
+    
+    // --- Model Selection and Initialization ---
+
+    function populateModelSelector() {
+        modelSelectorContainer.innerHTML = '';
+        modelSelectDropdown.innerHTML = '';
+        
+        Object.keys(MODELS).forEach(key => {
+            const model = MODELS[key];
+            
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = model.name;
+            modelSelectDropdown.appendChild(option);
+
+            const button = document.createElement('button');
+            button.className = 'model-button';
+            button.dataset.modelKey = key;
+            button.textContent = model.name;
+            button.onclick = (e) => selectModel(key, true, e.target); 
+            modelSelectorContainer.appendChild(button);
+        });
+    }
 /**
-         * Disables the model selection dropdown if a conversation has already started.
-         * The history length check ensures only the system prompt exists (length = 1).
-         */
-        function toggleModelSelectorLock() {
-            const history = allChatHistories[currentChatId];
-            
-            // If history exists and has more than 1 entry (i.e., user sent a message)
-            const shouldBeLocked = history && history.length > 1; 
-            
-            modelSelectDropdown.disabled = shouldBeLocked;
-            
-            // Optionally update the send button/input state as well, though it's managed elsewhere
-            // userInput.disabled = !GROQ_API_KEY || shouldBeLocked; 
-        }
+     * Disables the model selection dropdown if a conversation has already started.
+     */
+    function toggleModelSelectorLock() {
+        const history = allChatHistories[currentChatId];
+        
+        // If history exists and has more than 1 entry (i.e., user sent a message)
+        const shouldBeLocked = history && history.length > 1; 
+        
+        modelSelectDropdown.disabled = shouldBeLocked;
+    }
 
 function selectModel(modelKey, isInitialSelection = false, targetButton = null) {
-            const previousModel = CURRENT_MODEL;
-            CURRENT_MODEL = MODELS[modelKey];
-            localStorage.setItem('starlighter_model_key', modelKey); 
+    const previousModel = CURRENT_MODEL;
+    
+    // Find model by key or fall back to current
+    const modelObject = MODELS[modelKey] || CURRENT_MODEL;
+    CURRENT_MODEL = modelObject;
+    localStorage.setItem('starlighter_model_key', modelKey); 
 
-            modelDisplay.textContent = CURRENT_MODEL.name;
-            modelSelectDropdown.value = modelKey;
-                renderCurrentChat();
-
-            // 💡 FIX: Update system prompt in CURRENT chat history if the model actually changed
-            if (previousModel.id !== CURRENT_MODEL.id) {
-                 const currentHistory = allChatHistories[currentChatId];
-                 if (currentHistory && currentHistory.length > 0) {
-                     // Replace the old system prompt (always the first message)
-                     currentHistory[0] = getModelSystemPrompt();
-                     saveStateToLocalStorage();
-                     
-
-                 }
-            }
-
-            if (isInitialSelection) {
-                // ... (rest of initial selection logic remains the same)
-                document.querySelectorAll('.model-button').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                if (targetButton) {
-                    targetButton.classList.add('selected');
-                }
-
-                setTimeout(showChatInterface, 300);
-            } else {
-                 renderCurrentChat();
-            }
-        }
-        
-        // --- Local Storage Functions (omitted for brevity) ---
-
-        function saveStateToLocalStorage() {
-            const state = {
-                histories: allChatHistories,
-                counter: chatCounter,
-                currentId: currentChatId
-            };
-            try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-            } catch (e) {
-                console.error("Error saving to local storage:", e);
-            }
-        }
-
-        function loadStateFromLocalStorage() {
-            try {
-                const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);
-                if (storedState) {
-                    const state = JSON.parse(storedState);
-                    allChatHistories = state.histories || {};
-                    chatCounter = state.counter || 0;
-                    currentChatId = state.currentId || 'chat-0';
-
-                    if (Object.keys(allChatHistories).length > 0 && !allChatHistories[currentChatId]) {
-                        currentChatId = Object.keys(allChatHistories)[0];
-                    }
-                }
-
-                const savedModelKey = localStorage.getItem('starlighter_model_key') || Object.keys(MODELS)[0];
-                if (MODELS[savedModelKey]) {
-                     CURRENT_MODEL = MODELS[savedModelKey];
-                }
-                
-                return Object.keys(allChatHistories).length > 0;
-
-            } catch (e) {
-                console.error("Error loading from local storage:", e);
-                localStorage.removeItem(LOCAL_STORAGE_KEY);
-                return false;
-            }
-        }
-
-        // --- Chat Lifecycle Functions (omitted for brevity) ---
-
-        function renderCurrentChat() {
-            const history = allChatHistories[currentChatId];
-            chatBox.innerHTML = ''; 
-
-            if (!history || history.length <= 1) { 
-                const promptDiv = document.createElement('div');
-                promptDiv.className = 'welcome-prompt';
-                promptDiv.innerHTML = `<h1>Starlighter</h1><p>Using ${CURRENT_MODEL.name}. Ask a question to start a new conversation.</p>`;
-                chatBox.appendChild(promptDiv);
-            } else {
-                history.slice(1).forEach(msg => {
-                    addMessage(msg.role, msg.content, chatBox);
-                });
-            }
-            toggleModelSelectorLock();
-            userInput.focus();
-        }
-
-        function createNewChatObject(id, title) {
-            const newHistory = [SYSTEM_PROMPT];
-            allChatHistories[id] = newHistory;
-            
-            saveStateToLocalStorage();
-            return newHistory;
-        }
-
-        function updateChatTitle(id, newTitle) {
-            const chatItem = document.querySelector(`.chat-item[data-chat-id="${id}"]`);
-            if (chatItem) {
-                const displayedTitle = newTitle.length > 50 ? newTitle.substring(0, 47).trim() + '...' : newTitle;
-                chatItem.textContent = displayedTitle;
-                saveStateToLocalStorage();
-            }
-        }
-
-        function startNewChat() {
-            chatCounter++;
-            currentChatId = `chat-${chatCounter}`;
-            
-            createNewChatObject(currentChatId, `New Chat ${chatCounter}`);
-            
-            renderSidebar();
-            
-            document.querySelectorAll('.chat-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            const newItem = document.querySelector(`.chat-item[data-chat-id="${currentChatId}"]`);
-            if (newItem) newItem.classList.add('active'); 
-
-            renderCurrentChat();
-        }
-        
-        function loadChat(chatId) {
-            if (currentChatId === chatId) return; 
-
-            currentChatId = chatId;
-            saveStateToLocalStorage();
-
-            document.querySelectorAll('.chat-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`.chat-item[data-chat-id="${chatId}"]`).classList.add('active');
-
-            renderCurrentChat();
-        }
-
-        function renderSidebar() {
-            chatListContainer.innerHTML = ''; 
-            
-            const sortedChatIds = Object.keys(allChatHistories).sort((a, b) => {
-                return parseInt(b.split('-')[1]) - parseInt(a.split('-')[1]);
-            });
-
-            sortedChatIds.forEach(id => {
-                const history = allChatHistories[id];
-                
-                let title = `Chat ${id.split('-')[1]}`; 
-                const firstUserMsg = history.find(msg => msg.role === 'user');
-                if (firstUserMsg) {
-                    title = firstUserMsg.content; 
-                }
-
-                const chatItem = document.createElement('div');
-                chatItem.className = `chat-item ${id === currentChatId ? 'active' : ''}`;
-                chatItem.dataset.chatId = id;
-                chatItem.textContent = title.length > 50 ? title.substring(0, 47).trim() + '...' : title;
-                
-                chatItem.onclick = () => loadChat(id); 
-                
-                // Right-Click/Context Menu Listener - ATTACHED ON CREATION
-                chatItem.addEventListener('contextmenu', function(event) {
-                    event.preventDefault(); 
-                    contextMenuTargetChatId = id; 
-                    contextMenu.style.top = `${event.clientY}px`;
-                    contextMenu.style.left = `${event.clientX}px`;
-                    contextMenu.style.display = 'block';
-                });
-
-                chatListContainer.appendChild(chatItem);
-            });
-        }
-        
-        // --- Context Menu Delegation Handlers (UPDATED) ---
-
-        async function handleDeleteChat() {
-            const chatIdToDelete = contextMenuTargetChatId;
-            
-            if (!chatIdToDelete) return; 
-            
-            // 🚨 Use custom confirm 🚨
-            const confirmed = await showCustomConfirm(
-                "Confirm Deletion", 
-                `Are you sure you want to delete chat ${chatIdToDelete}? This action cannot be undone.`
-            );
-            
-            if (!confirmed) {
-                return;
-            }
-
-            delete allChatHistories[chatIdToDelete];
-            
-            const remainingChatIds = Object.keys(allChatHistories);
-            
-            if (currentChatId === chatIdToDelete) {
-                if (remainingChatIds.length > 0) {
-                    currentChatId = remainingChatIds[0];
-                } else {
-                    chatCounter++;
-                    currentChatId = `chat-${chatCounter}`;
-                    createNewChatObject(currentChatId, `New Chat ${chatCounter}`);
-                }
-            }
-
-            renderSidebar();
-            renderCurrentChat();
+    // Update UI components
+    modelDisplay.textContent = CURRENT_MODEL.name;
+    modelSelectDropdown.value = modelKey;
+    
+    // 💡 FIX: Update system prompt in CURRENT chat history if the model actually changed
+    if (previousModel.id !== CURRENT_MODEL.id) {
+        const currentHistory = allChatHistories[currentChatId];
+        if (currentHistory && currentHistory.length > 0) {
+            // Replace the old system prompt with one containing the new model name
+            currentHistory[0] = getModelSystemPrompt(CURRENT_MODEL.name);
             saveStateToLocalStorage();
         }
+    }
 
-        async function handleEditChatTitle() {
-            const chatIdToEdit = contextMenuTargetChatId;
-            
-            const chatItem = document.querySelector(`.chat-item[data-chat-id="${chatIdToEdit}"]`);
-            if (!chatIdToEdit || !chatItem) return;
+    if (isInitialSelection) {
+        document.querySelectorAll('.model-button').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        if (targetButton) {
+            targetButton.classList.add('selected');
+        }
 
-            const currentTitle = chatItem.textContent.replace('...', '').trim();
-            
-            // 🚨 Use custom prompt and capture new value 🚨
-            const newTitle = await showCustomPrompt(
-                "Edit Chat Title", 
-                `Enter a new title for chat ${chatIdToEdit}:`, 
-                currentTitle
-            );
+        setTimeout(showChatInterface, 300);
+    } else {
+        // Re-render the current chat to show the welcome prompt update (if applicable)
+        renderCurrentChat(); 
+    }
+}
+    
+    // --- Local Storage Functions ---
 
-            // If user cancels or enters empty string, newTitle will be null or empty string (handled by showCustomPrompt)
-            if (newTitle && newTitle.trim()) {
-                const history = allChatHistories[chatIdToEdit];
-                const cleanNewTitle = newTitle.trim();
-                
-                const firstUserMsgIndex = history.findIndex(msg => msg.role === 'user');
-                
-                if (firstUserMsgIndex !== -1) {
-                     history[firstUserMsgIndex].content = cleanNewTitle;
-                } else {
-                    // Fallback in case history is just the system prompt
-                    history.push({ "role": "user", "content": cleanNewTitle });
+    function saveStateToLocalStorage() {
+        const state = {
+            histories: allChatHistories,
+            counter: chatCounter,
+            currentId: currentChatId
+        };
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.error("Error saving to local storage:", e);
+        }
+    }
+
+    function loadStateFromLocalStorage() {
+        try {
+            const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (storedState) {
+                const state = JSON.parse(storedState);
+                allChatHistories = state.histories || {};
+                chatCounter = state.counter || 0;
+                currentChatId = state.currentId || 'chat-0';
+
+                if (Object.keys(allChatHistories).length > 0 && !allChatHistories[currentChatId]) {
+                    currentChatId = Object.keys(allChatHistories)[0];
                 }
+            }
 
-                updateChatTitle(chatIdToEdit, cleanNewTitle);
-                renderSidebar(); 
+            const savedModelKey = localStorage.getItem('starlighter_model_key') || Object.keys(MODELS)[0];
+            if (MODELS[savedModelKey]) {
+                 CURRENT_MODEL = MODELS[savedModelKey];
+            }
+            
+            return Object.keys(allChatHistories).length > 0;
+
+        } catch (e) {
+            console.error("Error loading from local storage:", e);
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+            return false;
+        }
+    }
+
+    // --- Chat Lifecycle Functions ---
+
+    function renderCurrentChat() {
+        const history = allChatHistories[currentChatId];
+        chatBox.innerHTML = ''; 
+
+        if (!history || history.length <= 1) { 
+            const promptDiv = document.createElement('div');
+            promptDiv.className = 'welcome-prompt';
+            promptDiv.innerHTML = `<h1>Starlighter</h1><p>Using ${CURRENT_MODEL.name}. Ask a question to start a new conversation.</p>`;
+            chatBox.appendChild(promptDiv);
+        } else {
+            // history.slice(1) to skip the system prompt at index 0
+            history.slice(1).forEach(msg => { 
+                addMessage(msg.role, msg.content, chatBox);
+            });
+        }
+        toggleModelSelectorLock();
+        userInput.focus();
+    }
+
+    function createNewChatObject(id, title) {
+        // 🛑 MODIFICATION 2: Use the current global model name when creating the chat
+        const newHistory = [getModelSystemPrompt(CURRENT_MODEL.name)];
+        allChatHistories[id] = newHistory;
+        
+        saveStateToLocalStorage();
+        return newHistory;
+    }
+
+    function updateChatTitle(id, newTitle) {
+        const chatItem = document.querySelector(`.chat-item[data-chat-id="${id}"]`);
+        if (chatItem) {
+            const displayedTitle = newTitle.length > 50 ? newTitle.substring(0, 47).trim() + '...' : newTitle;
+            chatItem.textContent = displayedTitle;
+            saveStateToLocalStorage();
+        }
+    }
+
+    function startNewChat() {
+        chatCounter++;
+        currentChatId = `chat-${chatCounter}`;
+        
+        createNewChatObject(currentChatId, `New Chat ${chatCounter}`);
+        
+        renderSidebar();
+        
+        document.querySelectorAll('.chat-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        const newItem = document.querySelector(`.chat-item[data-chat-id="${currentChatId}"]`);
+        if (newItem) newItem.classList.add('active'); 
+
+        renderCurrentChat();
+    }
+    
+    function loadChat(chatId) {
+        if (currentChatId === chatId) return; 
+
+        currentChatId = chatId;
+        saveStateToLocalStorage();
+
+        // 🛑 MODIFICATION 3: Find the model for this chat history and revert state
+        const history = allChatHistories[chatId];
+        let modelKeyToLoad = Object.keys(MODELS)[0]; // Default to first model
+
+        if (history && history.length > 0 && history[0].role === 'system') {
+            const promptContent = history[0].content;
+            
+            // 1. Extract the Model Name from the system prompt (using the pattern [MODEL_NAME] model)
+            const match = promptContent.match(/currently running on the (.*?) model\./);
+            
+            if (match && match[1]) {
+                const modelNameInHistory = match[1].trim();
+                
+                // 2. Find the model key (e.g., 'llama3.1-8b') that matches the name
+                const modelKey = Object.keys(MODELS).find(key => MODELS[key].name === modelNameInHistory);
+
+                if (modelKey) {
+                    modelKeyToLoad = modelKey;
+                }
             }
         }
         
-        // --- Setup Event Listeners after DOM loads ---
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // CRITICAL FIX: Event Delegation on the context menu parent with Stop Propagation
-            contextMenu.addEventListener('click', (event) => {
-                event.stopPropagation(); // Stop click from propagating to the document and hiding the menu prematurely
-                
-                const button = event.target.closest('button');
-                if (!button) return; 
-                
-                const action = button.dataset.action;
-                
-                if (action === 'edit') {
-                    handleEditChatTitle();
-                } else if (action === 'delete') {
-                    handleDeleteChat();
-                }
-                
-                // Hide the menu *after* the action logic has started (it will wait for the modal promise)
-                hideContextMenu();
-            });
+        // 3. Set the global model and update the dropdown/footer display
+        // Calling selectModel() handles both global state (CURRENT_MODEL) and UI update.
+        selectModel(modelKeyToLoad); 
 
-            // Global listener to hide context menu if the user clicks anywhere else
-            document.addEventListener('click', hideContextMenu);
-            document.addEventListener('contextmenu', (e) => {
-                if (!e.target.closest('.chat-item')) {
-                     hideContextMenu();
-                }
-            });
-            
-            // Start the key loading process
-            loadApiKey();
+
+        document.querySelectorAll('.chat-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`.chat-item[data-chat-id="${chatId}"]`).classList.add('active');
+        
+        // renderCurrentChat() is now called inside selectModel()
+    }
+
+    function renderSidebar() {
+        chatListContainer.innerHTML = ''; 
+        
+        const sortedChatIds = Object.keys(allChatHistories).sort((a, b) => {
+            return parseInt(b.split('-')[1]) - parseInt(a.split('-')[1]);
         });
 
+        sortedChatIds.forEach(id => {
+            const history = allChatHistories[id];
+            
+            let title = `Chat ${id.split('-')[1]}`; 
+            const firstUserMsg = history.find(msg => msg.role === 'user');
+            if (firstUserMsg) {
+                title = firstUserMsg.content; 
+            }
 
-        // --- Utility Functions (omitted for brevity) ---
-        function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
+            const chatItem = document.createElement('div');
+            chatItem.className = `chat-item ${id === currentChatId ? 'active' : ''}`;
+            chatItem.dataset.chatId = id;
+            chatItem.textContent = title.length > 50 ? title.substring(0, 47).trim() + '...' : title;
+            
+            chatItem.onclick = () => loadChat(id); 
+            
+            // Right-Click/Context Menu Listener - ATTACHED ON CREATION
+            chatItem.addEventListener('contextmenu', function(event) {
+                event.preventDefault(); 
+                contextMenuTargetChatId = id; 
+                contextMenu.style.top = `${event.clientY}px`;
+                contextMenu.style.left = `${event.clientX}px`;
+                contextMenu.style.display = 'block';
+            });
+
+            chatListContainer.appendChild(chatItem);
+        });
+    }
+    
+    // --- Context Menu Delegation Handlers ---
+
+    async function handleDeleteChat() {
+        const chatIdToDelete = contextMenuTargetChatId;
+        
+        if (!chatIdToDelete) return; 
+        
+        // 🚨 Use custom confirm 🚨
+        const confirmed = await showCustomConfirm(
+            "Confirm Deletion", 
+            `Are you sure you want to delete chat ${chatIdToDelete}? This action cannot be undone.`
+        );
+        
+        if (!confirmed) {
+            return;
         }
+
+        delete allChatHistories[chatIdToDelete];
+        
+        const remainingChatIds = Object.keys(allChatHistories);
+        
+        if (currentChatId === chatIdToDelete) {
+            if (remainingChatIds.length > 0) {
+                currentChatId = remainingChatIds[0];
+            } else {
+                chatCounter++;
+                currentChatId = `chat-${chatCounter}`;
+                createNewChatObject(currentChatId, `New Chat ${chatCounter}`);
+            }
+        }
+
+        renderSidebar();
+        renderCurrentChat();
+        saveStateToLocalStorage();
+    }
+
+    async function handleEditChatTitle() {
+        const chatIdToEdit = contextMenuTargetChatId;
+        
+        const chatItem = document.querySelector(`.chat-item[data-chat-id="${chatIdToEdit}"]`);
+        if (!chatIdToEdit || !chatItem) return;
+
+        const currentTitle = chatItem.textContent.replace('...', '').trim();
+        
+        // 🚨 Use custom prompt and capture new value 🚨
+        const newTitle = await showCustomPrompt(
+            "Edit Chat Title", 
+            `Enter a new title for chat ${chatIdToEdit}:`, 
+            currentTitle
+        );
+
+        // If user cancels or enters empty string, newTitle will be null or empty string (handled by showCustomPrompt)
+        if (newTitle && newTitle.trim()) {
+            const history = allChatHistories[chatIdToEdit];
+            const cleanNewTitle = newTitle.trim();
+            
+            const firstUserMsgIndex = history.findIndex(msg => msg.role === 'user');
+            
+            if (firstUserMsgIndex !== -1) {
+                history[firstUserMsgIndex].content = cleanNewTitle;
+            } else {
+                // Fallback in case history is just the system prompt
+                history.push({ "role": "user", "content": cleanNewTitle });
+            }
+
+            updateChatTitle(chatIdToEdit, cleanNewTitle);
+            renderSidebar(); 
+        }
+    }
+    
+    // --- Setup Event Listeners after DOM loads ---
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // CRITICAL FIX: Event Delegation on the context menu parent with Stop Propagation
+        contextMenu.addEventListener('click', (event) => {
+            event.stopPropagation(); // Stop click from propagating to the document and hiding the menu prematurely
+            
+            const button = event.target.closest('button');
+            if (!button) return; 
+            
+            const action = button.dataset.action;
+            
+            if (action === 'edit') {
+                handleEditChatTitle();
+            } else if (action === 'delete') {
+                handleDeleteChat();
+            }
+            
+            // Hide the menu *after* the action logic has started (it will wait for the modal promise)
+            hideContextMenu();
+        });
+
+        // Global listener to hide context menu if the user clicks anywhere else
+        document.addEventListener('click', hideContextMenu);
+        document.addEventListener('contextmenu', (e) => {
+            if (!e.target.closest('.chat-item')) {
+                 hideContextMenu();
+            }
+        });
+        
+        // Start the key loading process
+        loadApiKey();
+    });
+
+
+    // --- Utility Functions ---
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
 function addMessage(role, content, targetElement = chatBox) {
-            const msgDiv = document.createElement('div');
-            
-            // 💡 CRITICAL FIX: Ensure valid role and apply class defensively
-            const safeRole = (role === 'user' || role === 'ai') ? role : 'ai';
-            
-            msgDiv.className = `message ${safeRole}-message`;
-const contentToParse = content && typeof content === 'string' ? content : '...';
-            let renderedHtml;
-            
-            // This entire block relies on marked.js being defined.
-            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-                // Decode the content before parsing to handle HTML-encoded characters from the textarea.
-                const decodedContent = new DOMParser().parseFromString(contentToParse, 'text/html').documentElement.textContent;
-                
-                renderedHtml = marked.parse(decodedContent);
-            } else {
-                // Fallback (only used if window.onload somehow fails)
-                renderedHtml = contentToParse.replace(/\n/g, '<br>');
-            }
-msgDiv.innerHTML = renderedHtml;
-            targetElement.appendChild(msgDiv);
-            scrollToBottom();
-            
-            return msgDiv;
-        }
-
-        // --- API Key Loading (omitted for brevity) ---
-        async function loadApiKey() {
-            const hasExistingChats = loadStateFromLocalStorage();
-            populateModelSelector(); 
-            selectModel(Object.keys(MODELS).find(key => MODELS[key].id === CURRENT_MODEL.id) || Object.keys(MODELS)[0]);
-
-            if (Object.keys(allChatHistories).length === 0) {
-                createNewChatObject('chat-0', 'Initial Chat');
-                currentChatId = 'chat-0';
-            }
-
-            renderSidebar();
-            
-            showStartPage();
-            apiStatus.textContent = 'Fetching API Key...';
-            try {
-                const response = await fetch(API_KEY_URL);
-                if (!response.ok) throw new Error(`HTTP Status: ${response.status}`);
-                GROQ_API_KEY = (await response.text()).trim();
-                
-                if (GROQ_API_KEY.length < 10) throw new Error("Key is too short or invalid.");
-
-                apiStatus.textContent = 'API Key loaded successfully.';
-                
-                modelSelectDropdown.disabled = false;
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                
-                document.querySelectorAll('.model-button').forEach(btn => btn.style.pointerEvents = 'auto');
-
-                if (hasExistingChats) {
-                    showChatInterface();
-                } else {
-                     const initialModelKey = Object.keys(MODELS).find(key => MODELS[key].id === CURRENT_MODEL.id);
-                     if (initialModelKey) {
-                        const btn = document.querySelector(`.model-button[data-model-key="${initialModelKey}"]`);
-                        if(btn) btn.classList.add('selected');
-                     }
-                }
-            } catch (error) {
-                console.error('Groq API Key Loading Error:', error);
-                apiStatus.innerHTML = `<span style="color:red;">Error: Could not load API Key. (${error.message})</span>`;
-            }
-                        toggleModelSelectorLock();
-
-        }
+        const msgDiv = document.createElement('div');
         
-async function sendMessage() {
-  
-            const userText = userInput.value.trim();
-            if (!userText || !GROQ_API_KEY) return;
+        // 💡 CRITICAL FIX: Ensure valid role and apply class defensively
+        const safeRole = (role === 'user' || role === 'ai') ? role : 'ai';
+        
+        msgDiv.className = `message ${safeRole}-message`;
+        const contentToParse = content && typeof content === 'string' ? content : '...';
+        let renderedHtml;
+        
+        // This entire block relies on marked.js being defined.
+        if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+            // Decode the content before parsing to handle HTML-encoded characters from the textarea.
+            const decodedContent = new DOMParser().parseFromString(contentToParse, 'text/html').documentElement.textContent;
             
-            const currentHistory = allChatHistories[currentChatId];
-            const isFirstMessage = currentHistory.length === 1; 
-
-            userInput.value = '';
-            sendButton.disabled = true;
-            userInput.disabled = true;
-            modelSelectDropdown.disabled = true;
-
-            // ❌ REMOVED: renderCurrentChat() call here.
-            // This call was likely causing the previous message styles to be lost/flicker.
-            
-            // 1. Add User Message (Appended directly to the chatBox)
-            addMessage('user', userText); 
-            currentHistory.push({ "role": "user", "content": userText });
-            
-            if (isFirstMessage) {
-                updateChatTitle(currentChatId, userText); 
-                renderSidebar(); 
-            }
-
-            // 2. Add AI Placeholder Message (Appended directly to the chatBox)
-            const aiMessageElement = addMessage('ai', 'Thinking...'); 
-
-            try {
-                const response = await fetch(GROQ_ENDPOINT, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${GROQ_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: CURRENT_MODEL.id,
-                        messages: currentHistory, 
-                        temperature: 0.7,
-                        max_tokens: 500
-                    })
-                });
-
-                if (!response.ok) {
-                    let errorText = `HTTP Error: ${response.status} ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        if (errorData.error && errorData.error.message) errorText = errorData.error.message;
-                    } catch (e) {}
-
-                    const match = errorText.match(/Please try again in (\d+\.?\d*)s/);
-                    if (match) throw new Error(`Rate Limit Exceeded. Try again in ${match[1]} seconds.`);
-                    else throw new Error(errorText);
-                }
-
-                const data = await response.json();
-                
-                const assistantResponse = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
-                    ? data.choices[0].message.content
-                    : "Sorry, I received an empty response from the API.";
-const renderedHtml = (typeof marked !== 'undefined' && typeof marked.parse === 'function')
-? marked.parse(assistantResponse) // Use marked.parse for formatting
-                    : assistantResponse.replace(/\n/g, '<br>'); // Fallback
-                // 3. Update AI Placeholder with final response
-                aiMessageElement.innerHTML = assistantResponse.replace(/\n/g, '<br>');
-                aiMessageElement.innerHTML = renderedHtml;
-                currentHistory.push({ "role": "assistant", "content": assistantResponse });
-                
-                scrollToBottom();
-                saveStateToLocalStorage();
-
-            } catch (error) {
-                console.error('Groq API Call Failed:', error);
-                aiMessageElement.innerHTML = `<span style="color:red;">${error.message}</span>`;
-            } finally {
-              toggleModelSelectorLock();
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                userInput.focus();
-            }
+            renderedHtml = marked.parse(decodedContent);
+        } else {
+            // Fallback 
+            renderedHtml = contentToParse.replace(/\n/g, '<br>');
         }
-// Allow sending message by pressing Enter (without Shift) and a new line with Shift + Enter
-        userInput.addEventListener('keydown', function(event) {
-            // Check if the Enter key was pressed
-            if (event.key === 'Enter') {
-                // If the Shift key is NOT pressed, and the send button is not disabled:
-                if (!event.shiftKey && !sendButton.disabled) {
-                    event.preventDefault(); // Prevent the default action (which is usually a new line)
-                    sendMessage();
-                } 
-                // If Shift IS pressed, we do nothing, allowing the default browser behavior 
-                // which is to insert a new line (a crucial detail for textarea but works fine for text input too)
-                // If you later switch to a <textarea>, the behavior is natural.
+        msgDiv.innerHTML = renderedHtml;
+        targetElement.appendChild(msgDiv);
+        scrollToBottom();
+        
+        return msgDiv;
+    }
+
+    // --- API Key Loading ---
+    async function loadApiKey() {
+        const hasExistingChats = loadStateFromLocalStorage();
+        populateModelSelector(); 
+        // Ensure initial model is set based on local storage or default
+        selectModel(Object.keys(MODELS).find(key => MODELS[key].id === CURRENT_MODEL.id) || Object.keys(MODELS)[0]);
+
+        if (Object.keys(allChatHistories).length === 0) {
+            createNewChatObject('chat-0', 'Initial Chat');
+            currentChatId = 'chat-0';
+        }
+
+        renderSidebar();
+        
+        showStartPage();
+        apiStatus.textContent = 'Fetching API Key...';
+        try {
+            const response = await fetch(API_KEY_URL);
+            if (!response.ok) throw new Error(`HTTP Status: ${response.status}`);
+            GROQ_API_KEY = (await response.text()).trim();
+            
+            if (GROQ_API_KEY.length < 10) throw new Error("Key is too short or invalid.");
+
+            apiStatus.textContent = 'API Key loaded successfully.';
+            
+            modelSelectDropdown.disabled = false;
+            sendButton.disabled = false;
+            userInput.disabled = false;
+            
+            document.querySelectorAll('.model-button').forEach(btn => btn.style.pointerEvents = 'auto');
+
+            if (hasExistingChats) {
+                showChatInterface();
+            } else {
+                const initialModelKey = Object.keys(MODELS).find(key => MODELS[key].id === CURRENT_MODEL.id);
+                if (initialModelKey) {
+                    const btn = document.querySelector(`.model-button[data-model-key="${initialModelKey}"]`);
+                    if(btn) btn.classList.add('selected');
+                }
             }
-        });
-    </script>
+        } catch (error) {
+            console.error('Groq API Key Loading Error:', error);
+            apiStatus.innerHTML = `<span style="color:red;">Error: Could not load API Key. (${error.message})</span>`;
+        }
+        toggleModelSelectorLock();
+
+    }
+    
+async function sendMessage() {
+    
+        const userText = userInput.value.trim();
+        if (!userText || !GROQ_API_KEY) return;
+        
+        const currentHistory = allChatHistories[currentChatId];
+        const isFirstMessage = currentHistory.length === 1; 
+
+        userInput.value = '';
+        sendButton.disabled = true;
+        userInput.disabled = true;
+        modelSelectDropdown.disabled = true;
+
+        
+        // 1. Add User Message (Appended directly to the chatBox)
+        addMessage('user', userText); 
+        currentHistory.push({ "role": "user", "content": userText });
+        
+        if (isFirstMessage) {
+            updateChatTitle(currentChatId, userText); 
+            renderSidebar(); 
+        }
+
+        // 2. Add AI Placeholder Message (Appended directly to the chatBox)
+        const aiMessageElement = addMessage('ai', 'Thinking...'); 
+
+        try {
+            const response = await fetch(GROQ_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: CURRENT_MODEL.id, // CRITICAL: Uses the correctly synchronized CURRENT_MODEL.id
+                    messages: currentHistory, 
+                    temperature: 0.7,
+                    max_tokens: 500
+                })
+            });
+
+            if (!response.ok) {
+                let errorText = `HTTP Error: ${response.status} ${response.statusText}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.error && errorData.error.message) errorText = errorData.error.message;
+                } catch (e) {}
+
+                const match = errorText.match(/Please try again in (\d+\.?\d*)s/);
+                if (match) throw new Error(`Rate Limit Exceeded. Try again in ${match[1]} seconds.`);
+                else throw new Error(errorText);
+            }
+
+            const data = await response.json();
+            
+            const assistantResponse = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+                ? data.choices[0].message.content
+                : "Sorry, I received an empty response from the API.";
+            const renderedHtml = (typeof marked !== 'undefined' && typeof marked.parse === 'function')
+                ? marked.parse(assistantResponse) // Use marked.parse for formatting
+                : assistantResponse.replace(/\n/g, '<br>'); // Fallback
+            
+            // 3. Update AI Placeholder with final response
+            aiMessageElement.innerHTML = renderedHtml;
+            currentHistory.push({ "role": "assistant", "content": assistantResponse });
+            
+            scrollToBottom();
+            saveStateToLocalStorage();
+
+        } catch (error) {
+            console.error('Groq API Call Failed:', error);
+            aiMessageElement.innerHTML = `<span style="color:red;">${error.message}</span>`;
+        } finally {
+            toggleModelSelectorLock();
+            sendButton.disabled = false;
+            userInput.disabled = false;
+            userInput.focus();
+        }
+    }
+// Allow sending message by pressing Enter (without Shift) and a new line with Shift + Enter
+    userInput.addEventListener('keydown', function(event) {
+        // Check if the Enter key was pressed
+        if (event.key === 'Enter') {
+            // If the Shift key is NOT pressed, and the send button is not disabled:
+            if (!event.shiftKey && !sendButton.disabled) {
+                event.preventDefault(); // Prevent the default action 
+                sendMessage();
+            } 
+            // If Shift IS pressed, it allows a new line in the textarea
+        }
+    });
+</script>
 </body>
 </html>
