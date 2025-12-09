@@ -1903,12 +1903,7 @@ async function runUrlCloak() { // MUST be async now
           setTimeout(hideLoadingScreen, 500);
 
       });
-            // Wait for the entire page to load (including images/resources)
-      window.addEventListener('load', () => {
-          // Hide the loading screen after a small delay
-setTimeout(applyCustomCloak, 2000, 'Google', 'www.google.com');
 
-      });
 
         // Get references to the modal elements
         const modal = document.getElementById('custom-modal');
@@ -2301,5 +2296,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(measurePing, PING_INTERVAL_MS);
 }); // End of DOMContentLoaded
 </script>
+    <script>            // Wait for the entire page to load (including images/resources)
+      window.addEventListener('load', () => {
+          // Hide the loading screen after a small delay
+setTimeout(applyCustomCloak, 2000, 'Google', 'www.google.com');
+
+      });</script>
   </body>
 </html> 
