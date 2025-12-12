@@ -197,14 +197,15 @@
               window.addEventListener('load', () => {
           // Hide the loading screen after a small delay
 setTimeout(()=>{applyCustomCloak('Google','https://google.com/favicon.ico');
-              }, 600)
-
-      });
-        const localStorageKey = 'chattingadvisoryShown_v2_2_0';
+                     const localStorageKey = 'chattingadvisoryShown_v2_2_0';
         if (localStorage.getItem(localStorageKey) === null) {
          alert("If you have a account, use capital letters depending on password and name. if not, register or use guest mode");
 localStorage.setItem(localStorageKey, 'true');
         }
+               }, 800)
+
+      });
+
 
     </script>
 </body>
