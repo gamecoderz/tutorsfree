@@ -181,6 +181,8 @@
                     document.msExitFullscreen();
                 }
             }
+                            document.addEventListener('fullscreenchange', handleFullscreenChange);
+
         }
         
         function handleFullscreenChange() {
