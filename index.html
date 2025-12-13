@@ -1939,10 +1939,7 @@ function applyStoredCloak() {
     
     
 }
-// 🔑 Call the function to apply the stored cloak when the page loads
-window.addEventListener('DOMContentLoaded', () => {
-    applyStoredCloak();
-});
+
 // 🔑 Call the function to apply the stored cloak when the page loads
 
 // NEW/CORRECTED Helper Function: Uses Google's Favicon Service (Safe & Reliable)
@@ -1961,6 +1958,7 @@ function getGoogleFaviconUrl(targetUrl) {
     
     // This is the public, CORS-friendly Google service URL
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+
 }
       // --- Loading Screen Logic ---
       function hideLoadingScreen() {
@@ -2011,6 +2009,8 @@ async function applyUrlCloak(targetUrl) {
         
         // --- Apply the fetched data using the existing function ---
         applyCustomCloak(newTitle, newFaviconURL);
+        localStorage.setItem(TITLE_KEY, newTitle);
+        localStorage.setItem(FAVICON_KEY, newFaviconURL);
 
         // Notify the user
         await showModal(`Successfully applied cloak from URL: ${targetUrl}\nTitle: ${newTitle}\nFavicon URL: ${newFaviconURL || 'Not Found'}`);
