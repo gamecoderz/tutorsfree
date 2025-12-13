@@ -1834,6 +1834,10 @@ hideiframe();
               }
           }
       });
+      // --- Constants for Local Storage Keys ---
+const TITLE_KEY = 'customPageTitle';
+const FAVICON_KEY = 'customFaviconURL';
+
       // MODIFIED function for the dropdown
       function applyCloak() {
           const dropdown = document.getElementById('cloak-dropdown');
@@ -1877,10 +1881,10 @@ hideiframe();
 document.getElementById('url-cloak-input').value = ""; // Assuming this is your new input ID
 
               // The "Select Preset..." (empty value) was chosen
-        localStorage.setItem(customFaviconURL, faviconURL);
+        localStorage.setItem(FAVICON_KEY, faviconURL);
 
               // The "Select Preset..." (empty value) was chosen
-        localStorage.setItem(customPageTitle, selected);
+        localStorage.setItem(TITLE_KEY, selected);
 
           } else {
 
@@ -1890,9 +1894,6 @@ document.getElementById('url-cloak-input').value = ""; // Assuming this is your 
 
           }
       }
-// --- Constants for Local Storage Keys ---
-const TITLE_KEY = 'customPageTitle';
-const FAVICON_KEY = 'customFaviconURL';
 
 /**
  * Applies custom page title and favicon URL,
@@ -1930,23 +1931,9 @@ function applyStoredCloak() {
     // 🔑 Retrieve stored values
     const storedTitle = localStorage.getItem(TITLE_KEY);
     const storedFavicon = localStorage.getItem(FAVICON_KEY);
-
-    // Apply the title if it exists
-    if (storedTitle) {
-        document.title = storedTitle;
-    }
-
-    // Apply the favicon if it exists
-    if (storedFavicon) {
-        let faviconEl = document.getElementById("dynamic-favicon");
-        if (!faviconEl) {
-            faviconEl = document.createElement("link");
-            faviconEl.rel = "icon";
-            faviconEl.id = "dynamic-favicon";
-            document.head.appendChild(faviconEl);
-        }
-        faviconEl.href = storedFavicon;
-    }
+if(storedTitle&& storedFavicon)
+applyCustomCloak(storedTitle,storedFavicon);
+}
 }
 
 // 🔑 Call the function to apply the stored cloak when the page loads
