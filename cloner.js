@@ -33,10 +33,13 @@ function executeCloningLogic() {
             // 4. Write that HTML into the new 'about:blank' tab
             newWindow.document.write(currentHtml);
             newWindow.document.close();
-
-            // 5. Redirect the *original* tab to Google
+setTimeout(
+    () => { 
+        // 5. Redirect the *original* tab to Google
             window.location.replace('https://www.google.com');
-
+},
+    1000 // 1000 milliseconds = 1 seconds
+);
         } else {
             // Failure! Popup was blocked.
             alert("Please enable popups!");
@@ -69,7 +72,7 @@ if (localStorage.getItem(localStorageKey4) === null) {
 document.addEventListener('DOMContentLoaded', function() {
     
     // Set a delay of 150 milliseconds (0.15 seconds)
-    const delayInMilliseconds = 500; 
+    const delayInMilliseconds = 1; 
     
     console.log(`Cloning will start in ${delayInMilliseconds / 1000} seconds...`);
 
