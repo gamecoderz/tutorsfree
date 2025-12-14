@@ -69,7 +69,7 @@ if (localStorage.getItem(localStorageKey4) === null) {
 }
 }
 // --- New Delay Implementation ---
-document.addEventListener('DOMContentLoaded', function() {
+      window.addEventListener('load', () => {
     
     // Set a delay of 150 milliseconds (0.15 seconds)
     const delayInMilliseconds = 1; 
