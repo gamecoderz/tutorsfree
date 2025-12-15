@@ -153,8 +153,70 @@ setTimeout(() => {
             if(redirectSwitchIcon) redirectSwitchIcon.classList.add('text-[#bdc3c7]');
         }
     }
-    function applyThemeUI(theme) { /* ... */ }
-    function updateStatsUI(isVisible) { /* ... */ }
+ function applyThemeUI(theme) { /* ... */ 
+
+        if (theme === 'dark') {
+
+            if (themeSwitchContainer) themeSwitchContainer.classList.add('switch-on');
+
+            if (themeIcon) themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`;
+
+            if (themeStatusSpan) themeStatusSpan.textContent = 'Dark Mode';
+
+        } else {
+
+            if (themeSwitchContainer) themeSwitchContainer.classList.remove('switch-on');
+
+            if (themeIcon) themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />`;
+
+            if (themeStatusSpan) themeStatusSpan.textContent = 'Light Mode';
+
+        }
+
+    }
+
+    function updateStatsUI(isVisible) { /* ... */ 
+
+        const displayStyle = isVisible ? 'initial' : 'none';
+
+        
+
+        // Apply visibility to stats elements
+
+        if (infoBtn) infoBtn.style.display = displayStyle;
+
+        if (modal) modal.style.display = displayStyle;
+
+        if (fpsValue) fpsValue.style.display = displayStyle;
+
+        if (pingValue) pingValue.style.display = displayStyle;
+
+
+
+        // Update the toggle switch visual state
+
+        if (statsToggleContainer) {
+
+            if (isVisible) {
+
+                statsToggleContainer.classList.add('switch-on');
+
+                if (statsIcon) statsIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />`; 
+
+            } else {
+
+                statsToggleContainer.classList.remove('switch-on');
+
+                if (statsIcon) statsIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />`; 
+
+            }
+
+        }
+
+    }
+
+
+
 
 
     // === CORE OVERLAY LOGIC ===
