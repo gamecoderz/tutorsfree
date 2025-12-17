@@ -5,7 +5,7 @@ function executeCloningLogic() {
 
 
     // Check if the current URL is NOT about:blank
-    if (window.location.href !== 'about:blank') {
+    if (window.location.href !== 'about:blank' && localStorage.getItem('aboutBlankPopupState')) {
 
         // Try to open the new 'about:blank' tab
         const newWindow = window.open('about:blank', '_blank');
@@ -42,8 +42,10 @@ if(savedLink){
   window.location.replace('https://google.com/')
 }
   } else {
+            if(localStorage.getItem('aboutBlankPopupState')){
             // Failure! Popup was blocked.
-            alert("Please enable popups!");
+                showModal("Please enable popups!");
+            }
                         // 1. Find the script element itself
             const cloakElement = document.getElementById('cover');
             
