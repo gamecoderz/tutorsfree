@@ -1073,7 +1073,16 @@ width: 80%;
   </noscript>
       </div>
     </div>
+    <div id="cover" class"sticky-on-scroll">
+      <div class="cloaker-container">
+                      <div class="loader-circle"></div>
 
+        <p>Cloaking window...<p>
+                      <noscript>
+    <p>Please Enable Javascript!</p><a href="https://www.enable-javascript.com/">For more info, click here</a> 
+  </noscript>
+      </div>
+    </div>
     <div id="loading-screen" class"sticky-on-scroll">
       <div class="loader-container">
         <div class="loader-circle"></div>
@@ -1378,7 +1387,7 @@ width: 80%;
               </div>
 
               <div class="menu-buttons" style="margin-top: 25px;">
-                <button onclick="runCustomCloak()">Apply Custom Cloak</button>
+                <button onclick="runCustomCloak();         localStorage.setItem('LINKTAB_KEY', 'https://google.com');">Apply Custom Cloak</button>
               </div>
 
           </div>
@@ -1592,26 +1601,93 @@ loadQuotes();
           let currentHomepage = '';
 
           // --- CLOAK DATA ---
-          const FAVICONS = {
-      "Home | iCivics": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAV1BMVEVHcEz/ZAD/ZwD/WwD/WwD/YAD/ZAD/WwD/WwD/WwD/WwD/WwD/WwD/WwD/ZgD/WwD/WwD/WwD/aAD/gAD/kQD/kAD/kQD/kQD/kQD/ZQD/kQD/jQD/bwAvM226AAAAHHRSTlMACCEwRhgPhrjT4e6tdjyd+/9a///yfrli/53evbsBzAAAAOVJREFUeAGtkgUSwlAMRL+71u3+18QSHDrWheqbbpQcIcq4EIJL+o2U0MY672yI6ZPx7EoFFavVG0sWCeDAXpmr7zLy6Wnrp7JCpjK6OZMNhvYNQgGmPidKVMq+XhXAmGpgmKPMpV4LAsgM5HDPkMX4bAWkU+KzVZ91FMjgQwDbrv8FwfYCh5+2zFxhNz4SGqbEFCVYSqlzd/kUS1m6fjU5ymcT2gtdbk1Y+q7bsAnYvvlCu3VcxvVybbF9mBJSUAuNfyt1A9zOMLLPYc/bts1vw95fExC9LZi7zoP/Xs0kEpfkAJ0B2VoUsYiyizsAAAAASUVORK5CYII=",
-              "Clever | Portal": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQi3ptQJ9ibYtsUiQ1yNX5abVZvtmG9fwqjNpUqzO6N8qbrYgM:https://resources.finalsite.net/images/f_auto,q_auto/v1689877141/mooreschoolscom/emadd6nvplrnh1vsswjf/Clever-Logo.jpg&s",
-              "Home": "https://ssl.gstatic.com/classroom/favicon.ico",
-              "Khan Academy": "https://www.khanacademy.org/favicon.ico",
-              "Google Docs": "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png",
-              "Outlook Mail": "https://outlook.live.com/favicon.ico",
-              "Calculator": "https://www.calculator.net/favicon.ico",
-              "Google": "https://google.com/favicon.ico",
-               "Google Classroom - Google Search": "https://google.com/favicon.ico",
-               "StarlightGG": "https://starlightgg.github.io/favicon.png",
+const FAVICONS = {
+    "Home | iCivics": {
+        favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAV1BMVEVHcEz/ZAD/ZwD/WwD/WwD/YAD/ZAD/WwD/WwD/WwD/WwD/WwD/WwD/WwD/ZgD/WwD/WwD/WwD/aAD/gAD/kQD/kAD/kQD/kQD/kQD/ZQD/kQD/jQD/bwAvM226AAAAHHRSTlMACCEwRhgPhrjT4e6tdjyd+/9a///yfrli/53evbsBzAAAAOVJREFUeAGtkgUSwlAMRL+71u3+18QSHDrWheqbbpQcIcq4EIJL+o2U0MY672yI6ZPx7EoFFavVG0sWCeDAXpmr7zLy6Wnrp7JCpjK6OZMNhvYNQgGmPidKVMq+XhXAmGpgmKPMpV4LAsgM5HDPkMX4bAWkU+KzVZ91FMjgQwDbrv8FwfYCh5+2zFxhNz4SGqbEFCVYSqlzd/kUS1m6fjU5ymcT2gtdbk1Y+q7bsAnYvvlCu3VcxvVybbF9mBJSUAuNfyt1A9zOMLLPYc/bts1vw95fExC9LZi7zoP/Xs0kEpfkAJ0B2VoUsYiyizsAAAAASUVORK5CYII=",
+        link: "https://www.icivics.org"
+    },
 
-              "Activate Learning Digital Platform - Home": "https://activatelearning.com/wp-content/uploads/2023/05/favicon.png",
-              "Gallopade: Educational Products, Social Studies Curriculum, Reading, Common Core": "https://gallopade.com/favicon.ico",
-              "Classes | IL Classroom": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAV1BMVEVHcEwAAHwAAH0AAHwAAHwAAHwAAHwAAH0AAHwAAHwAAHwAAHwAAHoaGoMoKIYAAHZGR5fv8vv///+oqs6Mjr78///3+f5ucKzU1uk4OI/j5vPCxN+fosqdJ3hnAAAADHRSTlMAN4bC6//oX+wj1USkbhSpAAABF0lEQVR4AYTSBwKEIAwEQCxrjQY5g/X/7zwi1+vaHQsEzC1JmuVAkaWJeU1Z4JaqfKK6wVOa+m4t3tI+22etASIg7u+JX25AXR+A++5RG7USZAd3Yh7FT4x7tM0VeHYiSzeIW0F3LELfAd6c810/iBxIIdAkJgWo39aJr8i0LB0rpyZDUGamC/I0e1m3PmhmimAYT5Yj8uiciLiNgdwA4N25FRGtiouIA2cRbw+kXWGcV0uK+RPq6QomqBUm+4ikmJn0/bPzvh6fTbUIdEcsXlsUG5QYU2iFxB/lm+mhK9VT4f0wMdhug1tPHaG8DRlDh4wBULjS8jWfBzu2tf47TVR/2M+pqSmr85CSACxRo2QHNmA0IWcHAAp4HJXYNfpWAAAAAElFTkSuQmCC",
-              "Student Home - Zearn":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAYFBMVEVHcExFvdM6utGKxq8/u9I8utFIvtM8utFFvNM+u9JJvdNAu9Jnxdg/u9E9utFIvtQ/u9E8utFxydolutn1z0D+0Cr1z0H1zj/1z0L1z0H1z0H1zj/1z0H31GD1z0H10EovluFDAAAAIHRSTlMA2P8Vrf8v9EuXcci5auP/XGR9wLmh4v9CW5Vod9EfI0NLlVAAAACgSURBVHgBddDFAcRADATBRTMzO/8ojyTzXH9rUeKUVFKLPxllrXUEzrXfPIy+/RVglaQ+1lD91GCNSENxLk5cm34jvKhnP6lvlvMf7zyVHJhh5HzXdS+Yi2eFIjPAPLYQmGMpCUyDx+yVVIisqilkTUt1wCq2HtjANgKb2CZgXcvNc1VV9TAMJ2wfNbvp9tmyK8B1x/5hlThaur4fT/Ek3sqLEwwJ2FthAAAAAElFTkSuQmCC",
-              "Pear Assessment": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAY1BMVEVHcEwrOkIsO0I0QkMoN0InNkIiMUEnNUImNUEqOEIwPkI0QkMzQEMxP0IyQEMxP0PI21fL3lfQ5FjO4Vi4ylR2hUphcEVNXEKer1CnuVFqekbU6FmAlTmvwVNbaUdATkQAF0B9mIX1AAAAEHRSTlMApyf621LnZv7HHJjFfLc+PB2r8AAAALxJREFUKJHFkEkWgzAMQwljAg+I7cxhuv8pC3RHwrbV9luS7aL4q/qpHothyqGRVWGxVTXk4GCXZTHiJVVYY6v5rXPumDhb37zGe1PnWbdFgLh1WdiuICWsbY41FuUptE0GcgUXBMVTxjTJW6RZarxtBOdIYm0MXdtoFYDMs7W7UkEFFYj085obKocgHSaw3FGCPFbUIe7ls7R2JMHzYyOXfrDnHgEQo+d9emjJjVPKGZ6EfpcSbSvyf/+dPiDkDIV9PRLKAAAAAElFTkSuQmCC",
-              "My Drive - Google Drive":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAB+klEQVR4AWJwL/ChKx68ForXW7SJN1iswYb5GyxaqGqhycrgR+rTAKzUA2hoURwG8Cn3bL/wbNuIz7Y5p9kOY57NMBvZs23bPtt/dW7b4VR94ep3v6OHaJvFJSoaZldQROB+hDJValcFPBj20vB82AsEAYCVyTT1uUykaWitGAQIB1oy22WoKOhKQMCCMKa0dLypYN9dTs7HcMvg5YCAHQKAzLmwpwpYGbORBHH2LAfMY4G4JdmOaJkvBQnsMQ+DHAl5MTSeqjaMASaarvZ00SB8UATCyp1OVzMWgfBDiwLhY7J2+Nn5LScyVCkUfkoI3nLqWivAcB7j52HYSISMEJz9WIwEyyE/AAtEBJLbRLoNiBxigIcVgDO08AwFwnkpwfx4Sx1aSFrmLwAvRDz+BBtaFB6Gg9txA9sEg6d9NLNO+/5HvFz0sXXardmy567d4CFW4F5V1BuXiUgVNBa5jpdEBdz2vTRy2/cyxMtduyFpTjtMotobD1D75Yvs3LjopYDwh9v/5CNWrtsOSjGc/8bFqP/mHtRx7zyVodP7tisgZMeffB8SO6xfLYeIlllvTSkM2jH34UraQeB5VkvexoeWWsttR7bEaPu9Cz95IEZbAVw8wm461+7uuXrp4Q0L6LxxS/NKQQ+t2HpYKEKQPMhXkpkNqoYwXTEA+kphQitc/vYAAAAASUVORK5CYII=",
-              "Google Slides":"https://starlightgg.github.io/faviconV2.png"
-          };
+    "Clever | Portal": {
+        favicon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQi3ptQJ9ibYtsUiQ1yNX5abVZvtmG9fwqjNpUqzO6N8qbrYgM:https://resources.finalsite.net/images/f_auto,q_auto/v1689877141/mooreschoolscom/emadd6nvplrnh1vsswjf/Clever-Logo.jpg&s",
+        link: "https://clever.com"
+    },
+
+    "Home": {
+        favicon: "https://ssl.gstatic.com/classroom/favicon.ico",
+        link: "https://classroom.google.com/h"
+    },
+
+    "Khan Academy": {
+        favicon: "https://www.khanacademy.org/favicon.ico",
+        link: "https://www.khanacademy.org"
+    },
+
+    "Google Docs": {
+        favicon: "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png",
+        link: "https://docs.google.com"
+    },
+
+    "Outlook Mail": {
+        favicon: "https://outlook.live.com/owa/favicon.ico",
+        link: "https://outlook.live.com"
+    },
+
+    "Calculator": {
+        favicon: "https://www.calculator.net/favicon.ico",
+        link: "https://www.calculator.net"
+    },
+
+    "Google": {
+        favicon: "https://google.com/favicon.ico",
+        link: "https://google.com"
+    },
+
+    "Google Classroom - Google Search": {
+        favicon: "https://google.com/favicon.ico",
+        link: "https://www.google.com/search?q=google+classroom"
+    },
+
+    "StarlightGG": {
+        favicon: "https://starlightgg.github.io/favicon.png",
+        link: "https://google.com"
+    },
+
+    "Activate Learning Digital Platform - Home": {
+        favicon: "https://activatelearning.com/wp-content/uploads/2023/05/favicon.png",
+        link: "https://activatelearning.com"
+    },
+
+    "Gallopade: Educational Products, Social Studies Curriculum, Reading, Common Core": {
+        favicon: "https://gallopade.com/favicon.ico",
+        link: "https://gallopade.com"
+    },
+
+    "Classes | IL Classroom": {
+        favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAV1BMVEVHcEwAAHwAAH0AAHwAAHwAAHwAAHwAAH0AAHwAAHwAAHwAAHwAAHoaGoMoKIYAAHZGR5fv8vv///+oqs6Mjr78///3+f5ucKzU1uk4OI/j5vPCxN+fosqdJ3hnAAAADHRSTlMAN4bC6//oX+wj1USkbhSpAAABF0lEQVR4AYTSBwKEIAwEQCxrjQY5g/X/7zwi1+vaHQsEzC1JmuVAkaWJeU1Z4JaqfKK6wVOa+m4t3tI+22etASIg7u+JX25AXR+A++5RG7USZAd3Yh7FT4x7tM0VeHYiSzeIW0F3LELfAd6c810/iBxIIdAkJgWo39aJr8i0LB0rpyZDUGamC/I0e1m3PmhmimAYT5Yj8uiciLiNgdwA4N25FRGtiouIA2cRbw+kXWGcV0uK+RPq6QomqBUm+4ikmJn0/bPzvh6fTbUIdEcsXlsUG5QYU2iFxB/lm+mhK9VT4f0wMdhug1tPHaG8DRlDh4wBULjS8jWfBzu2tf47TVR/2M+pqSmr85CSACxRo2QHNmA0IWcHAAp4HJXYNfpWAAAAAElFTkSuQmCC",
+        link: "https://ilclassroom.com"
+    },
+
+    "Student Home - Zearn": {
+        favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAYFBMVEVHcExFvdM6utGKxq8/u9I8utFIvtM8utFFvNM+u9JJvdNAu9Jnxdg/u9E9utFIvtQ/u9E8utFxydolutn1z0D+0Cr1z0H1zj/1z0L1z0H1z0H1zj/1z0H31GD1z0H10EovluFDAAAAIHRSTlMA2P8Vrf8v9EuXcci5auP/XGR9wLmh4v9CW5Vod9EfI0NLlVAAAACgSURBVHgBddDFAcRADATBRTMzO/8ojyTzXH9rUeKUVFKLPxllrXUEzrXfPIy+/RVglaQ+1lD91GCNSENxLk5cm34jvKhnP6lvlvMf7zyVHJhh5HzXdS+Yi2eFIjPAPLYQmGMpCUyDx+yVVIisqilkTUt1wCq2HtjANgKb2CZgXcvNc1VV9TAMJ2wfNbvp9tmyK8B1x/5hlThaur4fT/Ek3sqLEwwJ2FthAAAAAElFTkSuQmCC",
+        link: "https://zearn.org"
+    },
+
+    "Pear Assessment": {
+        favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAY1BMVEVHcEwrOkIsO0I0QkMoN0InNkIiMUEnNUImNUEqOEIwPkI0QkMzQEMxP0IyQEMxP0PI21fL3lfQ5FjO4Vi4ylR2hUphcEVNXEKer1CnuVFqekbU6FmAlTmvwVNbaUdATkQAF0B9mIX1AAAAEHRSTlMApyf621LnZv7HHJjFfLc+PB2r8AAAALxJREFUKJHFkEkWgzAMQwljAg+I7cxhuv8pC3RHwrbV9luS7aL4q/qpHothyqGRVWGxVTXk4GCXZTHiJVVYY6v5rXPumDhb37zGe1PnWbdFgLh1WdiuICWsbY41FuUptE0GcgUXBMVTxjTJW6RZarxtBOdIYm0MXdtoFYDMs7W7UkEFFYj085obKocgHSaw3FGCPFbUIe7ls7R2JMHzYyOXfrDnHgEQo+d9emjJjVPKGZ6EfpcSbSvyf/+dPiDkDIV9PRLKAAAAAElFTkSuQmCC",
+        link: "https://app.edulastic.com/home/assignments"
+    },
+
+    "My Drive - Google Drive": {
+        favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAB+klEQVR4AWJwL/ChKx68ForXW7SJN1iswYb5GyxaqGqhycrgR+rTAKzUA2hoURwG8Cn3bL/wbNuIz7Y5p9kOY57NMBvZs23bPtt/dW7b4VR94ep3v6OHaJvFJSoaZldQROB+hDJValcFPBj20vB82AsEAYCVyTT1uUykaWitGAQIB1oy22WoKOhKQMCCMKa0dLypYN9dTs7HcMvg5YCAHQKAzLmwpwpYGbORBHH2LAfMY4G4JdmOaJkvBQnsMQ+DHAl5MTSeqjaMASaarvZ00SB8UATCyp1OVzMWgfBDiwLhY7J2+Nn5LScyVCkUfkoI3nLqWivAcB7j52HYSISMEJz9WIwEyyE/AAtEBJLbRLoNiBxigIcVgDO08AwFwnkpwfx4Sx1aSFrmLwAvRDz+BBtaFB6Gg9txA9sEg6d9NLNO+/5HvFz0sXXardmy567d4CFW4F5V1BuXiUgVNBa5jpdEBdz2vTRy2/cyxMtduyFpTjtMotobD1D75Yvs3LjopYDwh9v/5CNWrtsOSjGc/8bFqP/mHtRx7zyVodP7tisgZMeffB8SO6xfLYeIlllvTSkM2jH34UraQeB5VkvexoeWWsttR7bEaPu9Cz95IEZbAVw8wm461+7uuXrp4Q0L6LxxS/NKQQ+t2HpYKEKQPMhXkpkNqoYwXTEA+kphQitc/vYAAAAASUVORK5CYII=",
+        link: "https://drive.google.com"
+    },
+
+    "Google Slides": {
+        favicon: "https://starlightgg.github.io/faviconV2.png",
+        link: "https://slides.google.com"
+    }
+};
+
 
           // --- UTILITY FUNCTIONS ---
           function toggleContentVisibility(show) {
@@ -1880,33 +1956,36 @@ const FAVICON_KEY = 'customFaviconURL';
              urlCloakOptionsDiv.classList.add('visible');
              customOptionsDiv.classList.remove('visible'); // Hide standard custom inputs
           } else if (selected) {
-              // A preset was chosen
-              // Hide custom options
-              customOptionsDiv.classList.remove('visible');
-             urlCloakOptionsDiv.classList.remove('visible'); // Hide standard custom inputs
+// A preset was chosen
+customOptionsDiv.classList.remove('visible');
+urlCloakOptionsDiv.classList.remove('visible');
 
-              // Apply the preset cloak
-              document.title = selected;
-              const faviconURL = FAVICONS[selected];
-              let faviconEl = document.getElementById("dynamic-favicon");
+// Apply the preset cloak
+document.title = selected;
 
-              if (!faviconEl) {
-                  faviconEl = document.createElement("link");
-                  faviconEl.rel = "icon";
-                  faviconEl.id = "dynamic-favicon";
-                  document.head.appendChild(faviconEl);
-              }
-              faviconEl.href = faviconURL;
+const preset = FAVICONS[selected];
+const faviconURL = preset.favicon;
+const linkURL = preset.link;
 
-              // Clear custom inputs so the user knows the preset is active
-              document.getElementById('custom-title-input').value = "";
-              document.getElementById('custom-favicon-input').value = "";
-document.getElementById('url-cloak-input').value = ""; // Assuming this is your new input ID
-              // The "Select Preset..." (empty value) was chosen
-        localStorage.setItem(FAVICON_KEY, faviconURL);
+// Update favicon
+let faviconEl = document.getElementById("dynamic-favicon");
+if (!faviconEl) {
+    faviconEl = document.createElement("link");
+    faviconEl.rel = "icon";
+    faviconEl.id = "dynamic-favicon";
+    document.head.appendChild(faviconEl);
+}
+faviconEl.href = faviconURL;
 
-              // The "Select Preset..." (empty value) was chosen
-        localStorage.setItem(TITLE_KEY, selected);
+// Clear custom inputs
+document.getElementById('custom-title-input').value = "";
+document.getElementById('custom-favicon-input').value = "";
+document.getElementById('url-cloak-input').value = "";
+
+// Store values
+localStorage.setItem(TITLE_KEY, selected);
+localStorage.setItem(FAVICON_KEY, faviconURL);
+localStorage.setItem('LINKTAB_KEY', linkURL);
 
           } else {
 
@@ -2039,10 +2118,11 @@ async function applyUrlCloak(targetUrl) {
         applyCustomCloak(newTitle, newFaviconURL);
         localStorage.setItem(TITLE_KEY, newTitle);
         localStorage.setItem(FAVICON_KEY, newFaviconURL);
+        localStorage.setItem('LINKTAB_KEY', 'https://google.com');
 
         // Notify the user
         await showModal(`Successfully applied cloak from URL: ${targetUrl}\nTitle: ${newTitle}\nFavicon URL: ${newFaviconURL || 'Not Found'}`);
-        
+
     } catch (error) {
         console.error("Error fetching URL cloak data:", error);
         showModal("Failed to fetch data for URL cloaking. Please check the URL.");
@@ -2103,7 +2183,10 @@ async function runUrlCloak() { // MUST be async now
 
 // Check if the title fetching failed due to network blocks
     if (fetchedTitle.includes('Blocked') || fetchedTitle.includes('Error')) {
+              localStorage.setItem('LINKTAB_KEY', 'https://google.com');
+
         applyCustomCloak('Google', 'https://www.google.com/favicon.ico');
+
         showModal(`Title fetch failed: ${fetchedTitle}\nYour network likely blocks the public proxy service. Please use the 'Custom' option to set the title manually.`);
         return;
     }
@@ -2113,7 +2196,8 @@ async function runUrlCloak() { // MUST be async now
 
     // Keep the dropdown on "URL Cloak"
     document.getElementById('cloak-dropdown').value = "url-cloak";
-    
+            localStorage.setItem('LINKTAB_KEY', 'https://google.com');
+
     showModal(`URL Cloak Applied!\nTitle: ${fetchedTitle}\nFavicon fetched for: ${url} \n(If the title is messed up, please go to custom and put the correct custom title, leave favicon URL blank also.)`);
 }
       // --- REPLACE YOUR OLD LOADING SCREEN LOGIC WITH THIS ---
