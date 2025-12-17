@@ -80,7 +80,7 @@ setTimeout(() => {
     const STORAGE_KEY_OVERLAY = 'overlayToggleState'; // NEW KEY
     const STORAGE_KEY_STATS = 'statsToggleState';
     const REDIRECT_DELAY = 65; 
-    const REDIRECT_URL = "https://www.google.com";
+    const REDIRECT_URL = localStorage.getItem('LINKTAB_KEY');
 
     // === DOM ELEMENTS ===
     // Security UI
